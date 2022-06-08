@@ -1,0 +1,12 @@
+# ninja log v5
+1	108	6764129803328123	CMakeFiles/tablice_debug.dir/src/source1.c.obj	32a6c9a48bf2f2b1
+7	121	6764129803507321	CMakeFiles/tablice_debug.dir/main.c.obj	dd5cf661f361716a
+130	284	6764129805086436	tablice_debug.exe	6c3b810df3ecb6e
+1	137	6764148812565373	CMakeFiles/tablice_debug.dir/main.c.obj	dd5cf661f361716a
+137	287	6764148814050551	tablice_debug.exe	6c3b810df3ecb6e
+2	136	6764163515967592	CMakeFiles/tablice_debug.dir/main.c.obj	dd5cf661f361716a
+136	288	6764163517473215	tablice_debug.exe	6c3b810df3ecb6e
+1	116	6764163807197498	CMakeFiles/tablice_debug.dir/main.c.obj	dd5cf661f361716a
+116	262	6764163808633169	tablice_debug.exe	6c3b810df3ecb6e
+0	122	6764164807872240	CMakeFiles/tablice_debug.dir/main.c.obj	dd5cf661f361716a
+129	288	6764164809507972	tablice_debug.exe	6c3b810df3ecb6e

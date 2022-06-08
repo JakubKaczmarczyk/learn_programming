@@ -1,0 +1,25 @@
+# ninja log v5
+1	133	6764136896064279	CMakeFiles/struktura_projektu_debug.dir/src/prad.c.obj	298f948eabff8dac
+13	134	6764136896064279	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+135	286	6764136897570891	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	108	6764136969489959	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+108	255	6764136970930403	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	107	6764137024456272	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+107	253	6764137025883514	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	107	6764137345893283	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+107	253	6764137347339755	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	127	6764139097667091	CMakeFiles/struktura_projektu_debug.dir/src/prad.c.obj	298f948eabff8dac
+13	129	6764139097687055	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+129	281	6764139099184073	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	108	6764139320010352	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+108	254	6764139321436796	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	103	6764139550062463	CMakeFiles/struktura_projektu_debug.dir/src/prad.c.obj	298f948eabff8dac
+0	109	6764139591873409	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+109	257	6764139593331776	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	114	6764139919123771	CMakeFiles/struktura_projektu_debug.dir/src/prad.c.obj	298f948eabff8dac
+8	122	6764139919203226	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+122	267	6764139920635599	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	120	6764142980178450	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+121	274	6764142981689032	struktura_projektu_debug.exe	64c5a671ddd3ec4e
+1	122	6764145713426362	CMakeFiles/struktura_projektu_debug.dir/main.c.obj	1dee9aad98b4976
+122	272	6764145714902729	struktura_projektu_debug.exe	64c5a671ddd3ec4e

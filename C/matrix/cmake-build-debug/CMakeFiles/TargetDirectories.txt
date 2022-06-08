@@ -1,0 +1,3 @@
+D:/learn_programming/C/matrix/cmake-build-debug/CMakeFiles/matrix.dir
+D:/learn_programming/C/matrix/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/learn_programming/C/matrix/cmake-build-debug/CMakeFiles/rebuild_cache.dir
