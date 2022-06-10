@@ -1,0 +1,16 @@
+# PyCharm
+.idea
+
+# CLion
+cmake-build-*
+
+# Eclipse IDE
+.cproject
+.project
+.settings
+
+# Google Testing Framework
+googletest*/
+
+# Debian
+.directory
