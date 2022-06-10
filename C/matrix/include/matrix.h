@@ -5,5 +5,9 @@
 #ifndef MATRIX_MATRIX_H
 #define MATRIX_MATRIX_H
 
-struct
+typedef struct {
+    double * rows;
+} Matrix;
+
+double** create_matrix(unsigned int rows, unsigned int cols, double val);
 #endif //MATRIX_MATRIX_H

@@ -52,12 +52,14 @@ build cmake_object_order_depends_target_matrix: phony || CMakeFiles/matrix.dir
 build CMakeFiles/matrix.dir/main.c.obj: C_COMPILER__matrix_Debug D$:/learn_programming/C/matrix/main.c || cmake_object_order_depends_target_matrix
   DEP_FILE = CMakeFiles\matrix.dir\main.c.obj.d
   FLAGS = -g
+  INCLUDES = -ID:/learn_programming/C/matrix/include
   OBJECT_DIR = CMakeFiles\matrix.dir
   OBJECT_FILE_DIR = CMakeFiles\matrix.dir
 
 build CMakeFiles/matrix.dir/src/matrix.c.obj: C_COMPILER__matrix_Debug D$:/learn_programming/C/matrix/src/matrix.c || cmake_object_order_depends_target_matrix
   DEP_FILE = CMakeFiles\matrix.dir\src\matrix.c.obj.d
   FLAGS = -g
+  INCLUDES = -ID:/learn_programming/C/matrix/include
   OBJECT_DIR = CMakeFiles\matrix.dir
   OBJECT_FILE_DIR = CMakeFiles\matrix.dir\src
 
