@@ -52,19 +52,19 @@
 //     instrukcja.
 //   Po wykonaniu powyższych kroków usuń poniższą definicję funkcji `create_array()`
 //     oraz zakomentuj całe ciało funkcji main() z wyjątkiem instrukcji `return`.
-int* create_array(int n) {
-    int arr[n];
-    return arr;
-}
+//int* create_array(int n) {
+//    int arr[n];
+//    return arr;
+//}
 
 int main(void) {
-    int* arr = create_array(5);
-    printf("%d\n", arr[0]);
-
-    int arr2[] = {1, 2, 3};
-    for (size_t i = 0; i <= 4; ++i) {
-        arr2[i] = 1;  // BŁĄD: Odwołanie się do elementu arr2[4].
-    }
-    printf("%d\n", arr2[0]);
+//    int* arr = create_array(5);
+//    printf("%d\n", arr[0]);
+//
+//    int arr2[] = {1, 2, 3};
+//    for (size_t i = 0; i <= 4; ++i) {
+//        arr2[i] = 1;  // BŁĄD: Odwołanie się do elementu arr2[4].
+//    }
+//    printf("%d\n", arr2[0]);
     return EXIT_SUCCESS;
 }

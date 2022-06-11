@@ -1,5 +1,6 @@
 #ifndef MYMEM_H_
 #define MYMEM_H_
+#include <stddef.h>
 
 // TODO: Dołącz bibliotekę definiującą alias `size_t` - np. <stddef.h>
 
