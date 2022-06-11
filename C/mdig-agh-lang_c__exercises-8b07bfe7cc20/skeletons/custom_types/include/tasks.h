@@ -1,12 +1,22 @@
 // TODO: Zdefiniuj typ wyliczeniowy `Priority` zawierający poniższe etykiety:
 //   LOW, MEDIUM, HIGH
 
+typedef enum {
+    LOW, MEDIUM, HIGH} Priority ;
+
 // TODO: Zdefiniuj alias `task_id_t` na typ `unsigned int`.
+
+typedef unsigned int task_id_t;
 
 // TODO: Zdefiniuj szablon struktury `Task`, reprezentujący zadanie do wykonania
 //  w hipotetycznym systemie kolejkowym, zawierający poniższe pola:
 //   - id (typ: task_id_t) - ID zadania
 //   - priority (typ: Priority) - priorytet zadania
+
+typedef struct {
+    task_id_t id;
+    Priority priority;
+} Task;
 
 /**
  * Zwróć uchwyt "tylko do odczytu" do zadania o wyższym priorytecie.
@@ -17,7 +27,7 @@
  */
 // TODO: Uzupełnij prototyp i implementację poniższej funkcji zgodnie z jej
 //   powyższą specyfikacją. Pamiętaj o zasadach const-correctness!
-choose_more_important_task();
+const Task* choose_more_important_task(const Task* t1, const Task* t2);
 
 /**
  * Zwróć tekstową reprezentację priorytetu.
@@ -27,7 +37,7 @@ choose_more_important_task();
  */
 // TODO: Uzupełnij prototyp i implementację poniższej funkcji zgodnie z jej
 //   powyższą specyfikacją. Pamiętaj o zasadach const-correctness!
-priority_as_str(Priority p);
+const char* priority_as_str(Priority p);
 
 /**
  * Zwiększ priorytet o jeden stopień (chyba, że priorytet jest już najwyższy z możliwych).
@@ -36,7 +46,7 @@ priority_as_str(Priority p);
  */
 // TODO: Uzupełnij prototyp i implementację poniższej funkcji zgodnie z jej
 //   powyższą specyfikacją. Pamiętaj o zasadach const-correctness!
-increase_priority();
+void increase_priority(Priority * p);
 
 /**
  * Dokonaj transformacji zadania.
@@ -51,4 +61,4 @@ increase_priority();
  */
 // TODO: Uzupełnij prototyp i implementację poniższej funkcji zgodnie z jej
 //   powyższą specyfikacją. Pamiętaj o zasadach const-correctness!
-transform_task();
+void transform_task(Task* t, void(* f)(Priority* p));

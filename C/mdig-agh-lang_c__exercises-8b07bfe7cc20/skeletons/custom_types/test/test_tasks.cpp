@@ -14,6 +14,14 @@ TEST(TasksTest, ChooseMoreImportantTask) {
     //   (3) Zmień priorytet zadania #1 na wysoki.
     //   (4) Upewnij się, że wywołanie funkcji choose_more_important_task() dla
     //         zadań #1 i #2 zwróciło uchwyt do zadania #1.
+    Task t1 = {1,LOW};
+    Task t2 = {2, MEDIUM};
+    const Task* important_task = choose_more_important_task(&t1, &t2);
+    EXPECT_EQ(important_task, &t2);
+
+    t1.priority = HIGH;
+    important_task = choose_more_important_task(&t1, &t2);
+    EXPECT_EQ(important_task, &t1);
 }
 
 TEST(TasksTest, LastTwoBits) {
@@ -26,4 +34,11 @@ TEST(TasksTest, LastTwoBits) {
     //   (4) Upewnij się, że wywołanie funkcji transform_task() dla
     //         tego zadania i z uchwytem do funkcji increase_priority()
     //         zmieniło priorytet zadania na wysoki.
+    Task t1 = {3,LOW};
+    transform_task(&t1,increase_priority);
+    EXPECT_EQ(t1.priority, HIGH);
+
+    t1.priority = MEDIUM;
+    transform_task(&t1,increase_priority);
+    EXPECT_EQ(t1.priority, HIGH);
 }

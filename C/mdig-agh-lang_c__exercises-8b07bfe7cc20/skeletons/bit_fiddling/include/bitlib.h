@@ -14,7 +14,7 @@
  */
 // TODO: Uzupełnij prototyp i implementację poniższej funkcji zgodnie z jej
 //   powyższą specyfikacją. Pamiętaj o zasadach const-correctness!
-void decompose_into_bytes(uint16_t val, uint8_t* byte_hi, uint8_t* byte_lo);
+void decompose_into_bytes(const uint16_t val, uint8_t* byte_hi, uint8_t* byte_lo);
 
 /**
  * Zwróć wartość reprezentującą ostatnie dwa bity liczby.
