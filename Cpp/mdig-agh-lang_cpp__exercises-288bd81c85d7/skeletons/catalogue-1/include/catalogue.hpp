@@ -7,6 +7,8 @@
 
 #include <string>
 #include <map>
+#include <vector>
+#include <functional>
 
 class Product {
 public:
@@ -32,6 +34,8 @@ public:
     void add_product(Product& product) { inventory_.emplace(product.get_id(), product); }
     bool contains(std::string id) const { return inventory_.find(id) != inventory_.end(); }
 
+    std::vector<Product> get_products_with_appropriate_price(std::function<bool(double)> choose_fun) const;
+    std::vector<Product> get_products_by_name_part(std::string substr, bool is_case_sensitive = false) const;
 private:
     inventory_t inventory_;
 };
