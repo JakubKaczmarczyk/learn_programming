@@ -5,8 +5,8 @@
 #include "gtest/gtest.h"
 
 TEST(SeatTest, createSeat) {
-    Seat seat(3, 6);
-    EXPECT_EQ(seat.get_position(), 6);
+    Seat seat(3, 5);
+    EXPECT_EQ(seat.get_position(), 5);
     EXPECT_EQ(seat.get_row(), 3);
     EXPECT_EQ(seat.is_taken(), false);
 
@@ -14,9 +14,9 @@ TEST(SeatTest, createSeat) {
 }
 
 TEST(SeatTest, sittingTest) {
-    Seat seat(3, 6);
+    Seat seat(3, 5);
     EXPECT_EQ(seat.is_taken(), false);
-    std::unique_ptr<Passenger> passenger_ptr = std::make_unique<Passenger>(3,6);
+    std::unique_ptr<Passenger> passenger_ptr = std::make_unique<Passenger>(3,5);
     seat.take_seat(std::move(passenger_ptr));
     EXPECT_EQ(seat.is_taken(), true);
     passenger_ptr = seat.free_seat();
@@ -29,7 +29,7 @@ TEST(RowTest, CreateRow) {
     EXPECT_EQ(row.row_nr(), 5);
     EXPECT_EQ(row.seats_nr(), 6);
     EXPECT_EQ(row[0].get_row(), 5);
-    EXPECT_EQ(row[5].get_position(), 6);
+    EXPECT_EQ(row[5].get_position(), 5);
 }
 
 TEST(RowTest, EnterRowTest) {
@@ -52,10 +52,10 @@ TEST(RowTest, sitTest) {
     EXPECT_EQ(row.H_buffer_size(), 0);
     EXPECT_EQ(row.L_buffer_size(), 0);
     EXPECT_EQ(row[0].is_taken(), false);
-    EXPECT_EQ(row[1].is_taken(), true);
-    EXPECT_EQ(row[2].is_taken(), false);
+    EXPECT_EQ(row[1].is_taken(), false);
+    EXPECT_EQ(row[2].is_taken(), true);
     EXPECT_EQ(row[3].is_taken(), false);
-    EXPECT_EQ(row[4].is_taken(), true);
-    EXPECT_EQ(row[5].is_taken(), false);
+    EXPECT_EQ(row[4].is_taken(), false);
+    EXPECT_EQ(row[5].is_taken(), true);
 
 }

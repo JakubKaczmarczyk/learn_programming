@@ -7,25 +7,40 @@
 
 #include <queue>
 #include <functional>
+#include <list>
 #include "seats.hpp"
 #include "passenger.hpp"
 
+enum class QueueAlgorithm {
+    BackToFront,
+    Wer2
+
+};
 
 class Board {
 public:
     Board(int rows_nr, int seats_in_row);
-    void enqueue(std::function<std::queue<std::unique_ptr<Passenger>>(int,int)>);
+
+    int get_rows_nr() const { return rows_nr_; }
+    int get_seats_nr() const {return seats_nr_; }
+    void create_outer_queue(QueueAlgorithm algorithm=QueueAlgorithm::BackToFront);
+    int outer_queue_size() const { return static_cast<int>(outer_queue_.size()); }
+    int passenger_queued() const;
+    std::optional<int> passenger_seat_row_in_aisle(size_t position) const;
+    std::optional<bool> passenger_in_aisle_has_luggage(size_t position) const;
+    std::string outer_queue_string() const;
     void enqueue_passenger();
-    void load_luggage();
-    void enter_row();
     void step_forward();
-    bool all_seats_are_taken();
+    void load_luggage();
+    void enter_rows();
+
 
 private:
-    int size_;
-    std::vector<Row> rows_;
+    int rows_nr_;
+    int seats_nr_;
+    std::list<Row> rows_;
     std::vector<std::unique_ptr<Passenger>> aisle_;
-    std::queue<std::unique_ptr<Passenger>> outer_queue_;
+    std::list<std::unique_ptr<Passenger>> outer_queue_;
 };
 
 #endif //PLANE_BOARDING_BOARD_HPP

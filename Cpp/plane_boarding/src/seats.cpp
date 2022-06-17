@@ -22,7 +22,7 @@ void Seat::take_seat(std::unique_ptr<Passenger> passenger) {
 
 Row::Row(int row_nr, int seats_in_row) {
     row_nr_ = row_nr;
-    for(int i = 1; i <= static_cast<int>(seats_in_row); ++i) {
+    for(int i = 0; i < static_cast<int>(seats_in_row); ++i) {
         seats_.push_back(Seat(row_nr_, i));
     }
 }
@@ -40,14 +40,14 @@ void Row::enter_row(std::unique_ptr<Passenger> passenger) {
 void Row::sit() {
     if(!L_buffer_.empty()) {
         std::unique_ptr<Passenger> passenger = std::move(L_buffer_.top());
-        int seat_index = static_cast<int>(passenger->get_seat_position()-1);
+        int seat_index = static_cast<int>(passenger->get_seat_position());
         passenger->sit();
         seats_[seat_index].take_seat(std::move(passenger));
         L_buffer_.pop();
     }
     if(!H_buffer_.empty()) {
         std::unique_ptr<Passenger> passenger = std::move(H_buffer_.top());
-        int seat_index = static_cast<int>(passenger->get_seat_position()-1);
+        int seat_index = static_cast<int>(passenger->get_seat_position());
         passenger->sit();
         seats_[seat_index].take_seat(std::move(passenger));
         H_buffer_.pop();
