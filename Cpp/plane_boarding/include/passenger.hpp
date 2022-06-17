@@ -16,7 +16,7 @@ public:
             loading_luggage_time_(loading_luggage_time),
             taking_luggage_time_(taking_luggage_time), has_luggage_(true), luggage_counter_(0) {++next_id_; }
 
-    static void reset_id() {next_id_ = 1; }
+    static void reset_id() { next_id_ = 1; }
 
     int get_id() const { return id_; }
     int get_seat_row() const { return seat_row_; }
@@ -32,6 +32,8 @@ public:
 
     bool is_sitting() const {return is_sitting_;}
     bool has_luggage() const { return has_luggage_; }
+
+    ~Passenger() = default;
 
 private:
     inline static int next_id_ = 1;

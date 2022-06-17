@@ -23,3 +23,4 @@ void Passenger::take_luggage() {
         }
     }
 }
+

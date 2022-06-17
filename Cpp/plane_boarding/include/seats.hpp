@@ -12,10 +12,12 @@
 
 class Seat {
 public:
-    Seat(int position, int row) : position_(position), row_(row) {}
+    Seat(int row, int position) : row_(row), position_(position)  {}
+    Seat(Seat& seat);
+    Seat(Seat&& seat) = default;
 
-    bool is_taken() const { return is_taken_;}
-    std::unique_ptr<Passenger> free_seat() { is_taken_ = false; return std::move(passenger_);}
+    bool is_taken() const { return passenger_ != nullptr;}
+    std::unique_ptr<Passenger> free_seat();
     void take_seat(std::unique_ptr<Passenger> passenger);
 
     int get_position() const { return position_; }
@@ -24,33 +26,34 @@ public:
     ~Seat() = default;
 
 private:
-    bool is_taken_ = false;
-    int position_;
     int row_;
+    int position_;
     std::unique_ptr<Passenger> passenger_ = nullptr;
 
 };
 
 class Row {
 public:
-    Row(int seats_in_row, int row_nr) : size_(seats_in_row), row_nr_(row_nr) {}
+    Row(int row_nr, int seats_in_row);
 
-    int size() const { return size_;}
+    int row_nr() const { return row_nr_; }
+    int seats_nr() const { return static_cast<int>(seats_.size()); }
+    int L_buffer_size() const { return static_cast<int>(L_buffer_.size()); }
+    int H_buffer_size() const { return static_cast<int>(H_buffer_.size()); }
 
     const Seat& operator[](std::size_t position) const { return seats_[position]; }
     Seat& operator[](std::size_t position) { return seats_[position]; }
 
     void enter_row(std::unique_ptr<Passenger> passenger);
+    void sit();
 //    std::unique_ptr<Passenger> leave_row();
 
 
 private:
-    int size_;
     int row_nr_;
     std::vector<Seat> seats_;
-    std::stack<Seat> L_buffer_;
-    std::stack<Seat> R_buffer_;
+    std::stack<std::unique_ptr<Passenger>> L_buffer_;
+    std::stack<std::unique_ptr<Passenger>> H_buffer_;
 };
-
 
 #endif //PLANE_BOARDING_SEATS_HPP
