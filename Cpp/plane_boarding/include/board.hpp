@@ -13,7 +13,7 @@
 
 enum class QueueAlgorithm {
     BackToFront,
-    Wer2
+    FrontToBack
 
 };
 
@@ -21,18 +21,21 @@ class Board {
 public:
     Board(int rows_nr, int seats_in_row);
 
-    int get_rows_nr() const { return rows_nr_; }
-    int get_seats_nr() const {return seats_nr_; }
+    int rows_nr() const { return rows_nr_; }
+    int seats_nr() const {return seats_nr_; }
     void create_outer_queue(QueueAlgorithm algorithm=QueueAlgorithm::BackToFront);
     int outer_queue_size() const { return static_cast<int>(outer_queue_.size()); }
     int passenger_queued() const;
-    std::optional<int> passenger_seat_row_in_aisle(size_t position) const;
-    std::optional<bool> passenger_in_aisle_has_luggage(size_t position) const;
+    const std::unique_ptr<Passenger>* operator[](std::size_t position) const { return &aisle_[position]; }
+    std::unique_ptr<Passenger>* operator[](std::size_t position) { return &aisle_[position]; }
     std::string outer_queue_string() const;
     void enqueue_passenger();
     void step_forward();
     void load_luggage();
     void enter_rows();
+    void sit();
+    bool is_boarding_finished() const;
+    void generate_tour_report(int tour, std::string name) const;
 
 
 private:

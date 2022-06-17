@@ -9,10 +9,10 @@ TEST(TestPassenger, createPassenger) {
     Passenger pas1(5, 1,3,1);
     ASSERT_EQ(pas1.get_id(), 1);
 
-    EXPECT_EQ(pas1.get_seat_position(),1);
-    EXPECT_EQ(pas1.get_seat_row(), 5);
-    EXPECT_EQ(pas1.get_loading_luggage_time(), 3);
-    EXPECT_EQ(pas1.get_taking_luggage_time(), 1);
+    EXPECT_EQ(pas1.seat_position(), 1);
+    EXPECT_EQ(pas1.seat_row(), 5);
+    EXPECT_EQ(pas1.loading_luggage_time(), 3);
+    EXPECT_EQ(pas1.taking_luggage_time(), 1);
     EXPECT_EQ(pas1.is_sitting(), false);
     EXPECT_EQ(pas1.has_luggage(), true);
 }

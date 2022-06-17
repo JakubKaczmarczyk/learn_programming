@@ -59,3 +59,4 @@ TEST(RowTest, sitTest) {
     EXPECT_EQ(row[5].is_taken(), true);
 
 }
+

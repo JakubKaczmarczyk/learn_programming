@@ -4,6 +4,7 @@
 
 #include "board.hpp"
 #include <sstream>
+#include <fstream>
 
 
 Board::Board(int row_number, int seats_in_row) {
@@ -21,26 +22,20 @@ void Board::create_outer_queue(QueueAlgorithm algorithm) {
         case QueueAlgorithm::BackToFront:
             for(int row_it = rows_nr_-1; row_it >= 0; --row_it) {
                 for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it));
+                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
+                }
+            }
+            break;
+        case QueueAlgorithm::FrontToBack:
+            for(int row_it = 0; row_it < rows_nr_; ++row_it) {
+                for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
                 }
             }
             break;
         default:
             break;
     }
-}
-std::optional<int> Board::passenger_seat_row_in_aisle(size_t position) const {
-    if (aisle_[position] == nullptr) {
-        return NULL;
-    }
-    return aisle_[position]->get_seat_row();
-}
-
-std::optional<bool> Board::passenger_in_aisle_has_luggage(size_t position) const {
-    if (aisle_[position] == nullptr) {
-        return NULL;
-    }
-    return aisle_[position]->has_luggage();
 }
 
 int Board::passenger_queued() const {
@@ -56,7 +51,7 @@ int Board::passenger_queued() const {
 std::string Board::outer_queue_string() const {
     std::ostringstream oss;
     for(const auto& passenger : outer_queue_) {
-        oss << "(" << passenger->get_seat_row() << " " << passenger->get_seat_position() << ")\n";
+        oss << "(" << passenger->seat_row() << " " << passenger->seat_position() << ")\n";
     }
     return oss.str();
 
@@ -66,13 +61,16 @@ void Board::enqueue_passenger() {
     if (aisle_[0] != nullptr) {
         return;
     }
+    if (outer_queue_.empty()) {
+        return;
+    }
     aisle_[0] = std::move(outer_queue_.front());
     outer_queue_.pop_front();
 }
 
 void Board::step_forward() {
     for(int i = rows_nr_-1; i >= 1; --i) {
-        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i-1]->get_seat_row() != i-1) {
+        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i - 1]->seat_row() != i - 1) {
             aisle_[i] = std::move(aisle_[i-1]);
             aisle_[i-1] = nullptr;
         }
@@ -86,7 +84,7 @@ void Board::load_luggage() {
         if (aisle_[i] == nullptr) {
             continue;
         }
-        if (aisle_[i]->get_seat_row() != static_cast<int>(i) ) {
+        if (aisle_[i]->seat_row() != static_cast<int>(i) ) {
             continue;
         }
         aisle_[i] -> load_luggage();
@@ -100,7 +98,7 @@ void Board::enter_rows() {
         if (aisle_[i] == nullptr) {
             continue;
         }
-        if (aisle_[i]->get_seat_row() != static_cast<int>(i) ) {
+        if (aisle_[i]->seat_row() != static_cast<int>(i) ) {
             continue;
         }
         if (aisle_[i]->has_luggage()) {
@@ -111,4 +109,39 @@ void Board::enter_rows() {
 
     }
     i = 0;
+}
+
+void Board::sit() {
+    for(auto& row : rows_) {
+        row.sit();
+    }
+}
+
+bool Board::is_boarding_finished() const {
+    for(auto& row : rows_) {
+        for(size_t i = 0; i < static_cast<size_t>(seats_nr_); ++i) {
+            if( !row[i].is_taken() ) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void Board::generate_tour_report(int tour, std::string name) const {
+    std::fstream f(name, std::ios::app);
+    if(f.is_open()) {
+        f << "\n";
+        for(int i = 0; i < seats_nr_*rows_nr_; ++i) {
+            f << "---";
+        }
+        f << "\nTour " << tour <<" Queue:\n";
+        for(int j = 0; j < seats_nr_*rows_nr_ - static_cast<int>(outer_queue_.size()); ++j) {
+            f << "   ";
+        }
+        for(const auto& passenger_ptr : outer_queue_) {
+            f << passenger_ptr->seat_row() << passenger_ptr->seat_position() << " ";
+        }
+        }
+    f.close();
 }

@@ -19,10 +19,10 @@ public:
     static void reset_id() { next_id_ = 1; }
 
     int get_id() const { return id_; }
-    int get_seat_row() const { return seat_row_; }
-    int get_seat_position() const { return seat_position_; }
-    int get_loading_luggage_time() const { return loading_luggage_time_; }
-    int get_taking_luggage_time() const {return taking_luggage_time_; }
+    int seat_row() const { return seat_row_; }
+    int seat_position() const { return seat_position_; }
+    int loading_luggage_time() const { return loading_luggage_time_; }
+    int taking_luggage_time() const {return taking_luggage_time_; }
 
     void sit() {is_sitting_ = true; }
     void stand_up() {is_sitting_ = false;}
