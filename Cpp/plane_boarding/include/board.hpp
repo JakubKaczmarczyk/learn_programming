@@ -35,6 +35,7 @@ public:
     void enter_rows();
     void sit();
     bool is_boarding_finished() const;
+    void clear_report(std::string name) const;
     void generate_tour_report(int tour, std::string name) const;
 
 
