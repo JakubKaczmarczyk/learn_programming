@@ -12,9 +12,12 @@ class Passenger {
 public:
     Passenger(int seat_row, int seat_position, int loading_luggage_time=1, int taking_luggage_time=1) :
             id_(next_id_), seat_row_(seat_row),
-            seat_position_(seat_position), is_sitting_(false),
+            seat_position_(seat_position),
+            is_sitting_(false),
             loading_luggage_time_(loading_luggage_time),
-            taking_luggage_time_(taking_luggage_time), has_luggage_(true), luggage_counter_(0) {++next_id_; }
+            taking_luggage_time_(taking_luggage_time),
+            has_luggage_(true),
+            luggage_counter_(0) {++next_id_; }
 
     static void reset_id() { next_id_ = 1; }
 
