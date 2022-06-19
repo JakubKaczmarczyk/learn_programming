@@ -47,7 +47,7 @@ Row::Row(Row &&row) {
 
 void Row::step_forward_row() {
     for(size_t i = 0; i < first_lower_seat_; ++i) {
-        if(buffer_[i] == nullptr && buffer_[i+1] != nullptr && buffer_[i+1]->seat_position() < static_cast<int>(i)){
+        if(buffer_[i] == nullptr && buffer_[i+1] != nullptr && buffer_[i+1]->seat_position() <= static_cast<int>(i)){
             buffer_[i] = std::move(buffer_[i+1]);
             buffer_[i+1] = nullptr;
         }
