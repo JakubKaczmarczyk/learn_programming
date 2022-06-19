@@ -14,22 +14,28 @@ Board::Board(int row_number, int seats_in_row) {
         rows_.push_back(Row(i, seats_nr_));
         aisle_.push_back(nullptr);
     }
+    for(int i = 0; i <rows_nr_*seats_nr_; ++i) {
+        outer_queue_.push_back(nullptr);
+    }
 }
 
 
 void Board::create_outer_queue(QueueAlgorithm algorithm) {
+    size_t queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
     switch (algorithm) {
         case QueueAlgorithm::BackToFront:
             for(int row_it = rows_nr_-1; row_it >= 0; --row_it) {
                 for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+                    --queue_it;
                 }
             }
             break;
         case QueueAlgorithm::FrontToBack:
             for(int row_it = 0; row_it < rows_nr_; ++row_it) {
                 for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+                    --queue_it;
                 }
             }
             break;
@@ -37,22 +43,14 @@ void Board::create_outer_queue(QueueAlgorithm algorithm) {
             std::vector<int> seats_numbers = {0,5,1,4,2,3};
             for(auto const& seat_it : seats_numbers) {
                 for (int row_it = rows_nr_ - 1; row_it >= 0; --row_it) {
-                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+                    --queue_it;
                 }
             }
             break;
     }
 }
 
-int Board::passenger_queued() const {
-    int counter = 0;
-    for(const auto& queue_pleace : aisle_) {
-        if (queue_pleace != nullptr) {
-            ++counter;
-        }
-    }
-    return counter;
-}
 
 std::string Board::outer_queue_string() const {
     std::ostringstream oss;
@@ -67,16 +65,17 @@ void Board::enqueue_passenger() {
     if (aisle_[0] != nullptr) {
         return;
     }
-    if (outer_queue_.empty()) {
+    if (outer_queue_[static_cast<size_t>(rows_nr_*seats_nr_-1)] == nullptr) {
         return;
     }
-    aisle_[0] = std::move(outer_queue_.front());
-    outer_queue_.pop_front();
+    aisle_[0] = std::move(outer_queue_[static_cast<size_t>(rows_nr_*seats_nr_-1)]);
+    outer_queue_.pop_back();
+    outer_queue_.insert(outer_queue_.begin(), nullptr);
 }
 
 void Board::step_forward() {
-    for(int i = rows_nr_-1; i >= 1; --i) {
-        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i - 1]->seat_row() != i - 1) {
+    for(size_t i = static_cast<size_t>(rows_nr_-1); i >= 1; --i) {
+        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i-1]->seat_row() != static_cast<int>(i-1)) {
             aisle_[i] = std::move(aisle_[i-1]);
             aisle_[i-1] = nullptr;
         }
@@ -98,25 +97,35 @@ void Board::load_luggage() {
 }
 
 void Board::enter_rows() {
-    size_t i = -1;
-    for(auto& row : rows_) {
-        ++i;
-        if (aisle_[i] == nullptr) {
-            continue;
+    std::vector<bool> may_enter_row(static_cast<size_t>(rows_nr_), false);
+    for(size_t i = 0; i < static_cast<size_t>(rows_nr_); ++i) {
+        if (aisle_[i] != nullptr) {
+            may_enter_row[i] = rows_[i].may_passenger_enter_row(
+                    aisle_[i]->seat_row(), aisle_[i]->seat_position());
         }
-        if (aisle_[i]->seat_row() != static_cast<int>(i) ) {
+    }
+    for(size_t i = 0; i < static_cast<size_t>(rows_nr_); ++i) {
+        if (aisle_[i] == nullptr) {
             continue;
         }
         if (aisle_[i]->has_luggage()) {
             continue;
         }
-        row.enter_row(std::move(aisle_[i]));
+        if (!may_enter_row[i]) {
+            continue;
+        }
+        rows_[i].enter_row(std::move(aisle_[i]));
         aisle_[i] = nullptr;
 
     }
-    i = 0;
 }
 
+void Board::step_forward_row() {
+    for(auto& row : rows_) {
+        row.step_forward_row();
+    }
+
+}
 void Board::sit() {
     for(auto& row : rows_) {
         row.sit();
@@ -126,7 +135,7 @@ void Board::sit() {
 bool Board::is_boarding_finished() const {
     for(auto& row : rows_) {
         for(size_t i = 0; i < static_cast<size_t>(seats_nr_); ++i) {
-            if( !row[i].is_taken() ) {
+            if( !row.seat()[i].is_taken() ) {
                 return false;
             }
         }
@@ -177,8 +186,8 @@ void Board::generate_tour_report(int tour, std::string name) const {
                 f << "|";
                 // board
                 for (auto &row_it: rows_) {
-                    if (row_it[seat_it].is_taken()) {
-                        f << row_it[seat_it].get_row() << row_it[seat_it].get_position() << "|";
+                    if (row_it.seat()[seat_it].is_taken()) {
+                        f << row_it.seat()[seat_it].get_row() << row_it.seat()[seat_it].get_position() << "|";
                     } else {
                         f << "  |";
                     }
@@ -191,12 +200,12 @@ void Board::generate_tour_report(int tour, std::string name) const {
         {
             // Queue
             {
-                for (int j = 0; j < seats_nr_ * rows_nr_ - static_cast<int>(outer_queue_.size()); ++j) {
-                    f << "   ";
-                }
-                for (auto passenger_ptr = outer_queue_.rbegin();
-                     passenger_ptr != outer_queue_.rend(); ++passenger_ptr) {
-                    f << (*passenger_ptr)->seat_row() << (*passenger_ptr)->seat_position() << " ";
+                for (auto& passenger : outer_queue_) {
+                    if (passenger != nullptr) {
+                        f << passenger->seat_row() << passenger->seat_position() << " ";
+                    } else {
+                        f << "   ";
+                    }
                 }
             }
             // crossing
@@ -229,8 +238,8 @@ void Board::generate_tour_report(int tour, std::string name) const {
                 f << "|";
                 // board
                 for (auto &row_it: rows_) {
-                    if (row_it[seat_it].is_taken()) {
-                        f << row_it[seat_it].get_row() << row_it[seat_it].get_position() << "|";
+                    if (row_it.seat()[seat_it].is_taken()) {
+                        f << row_it.seat()[seat_it].get_row() << row_it.seat()[seat_it].get_position() << "|";
                     } else {
                         f << "  |";
                     }

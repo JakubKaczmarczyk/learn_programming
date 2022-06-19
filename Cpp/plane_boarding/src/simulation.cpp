@@ -10,6 +10,7 @@ int simulate_board(int row_nr, int seats_in_row, QueueAlgorithm algorithm, std::
     int i = 0;
     while(!board.is_boarding_finished()) {
         board.generate_tour_report(i, raport_file_name);
+        board.step_forward_row();
         board.enter_rows();
         board.sit();
         board.load_luggage();

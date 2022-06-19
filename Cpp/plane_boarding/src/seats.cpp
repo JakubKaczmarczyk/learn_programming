@@ -36,6 +36,43 @@ Row::Row(int row_nr, int seats_in_row) {
     }
 }
 
+Row::Row(Row &&row) {
+    row_nr_ = row.row_nr_;
+    seats_in_row_ = row.seats_in_row_;
+    first_lower_seat_ = row.first_lower_seat_;
+    first_higher_seat = row.first_higher_seat;
+    seats_ = std::move(row.seats_);
+    buffer_ = std::move(row.buffer_);
+}
+
+void Row::step_forward_row() {
+    for(size_t i = 0; i < first_lower_seat_; ++i) {
+        if(buffer_[i] == nullptr && buffer_[i+1] != nullptr && buffer_[i+1]->seat_position() <= static_cast<int>(i)){
+            buffer_[i] = std::move(buffer_[i+1]);
+            buffer_[i+1] = nullptr;
+        }
+    }
+    for(size_t i = static_cast<size_t>(seats_in_row_-1); i > first_higher_seat; --i) {
+        if(buffer_[i] == nullptr && buffer_[i-1] != nullptr && buffer_[i-1]->seat_position() >= static_cast<int>(i)){
+            buffer_[i] = std::move(buffer_[i-1]);
+            buffer_[i-1] = nullptr;
+        }
+    }
+}
+
+
+bool Row::may_passenger_enter_row(int row_nr, int seat_nr) const {
+    if (row_nr_ != row_nr) {
+        return false;
+    }
+    if( seat_nr <= static_cast<int>(first_lower_seat_) && buffer_[first_lower_seat_] != nullptr) {
+        return false;
+    }
+    if( seat_nr >= static_cast<int>(first_higher_seat) && buffer_[first_higher_seat] != nullptr) {
+        return false;
+    }
+    return true;
+}
 void Row::enter_row(std::unique_ptr<Passenger> passenger) {
     if (passenger->seat_row() == row_nr_) {
         if (passenger->seat_position() < seats_in_row_ / 2) {
@@ -53,6 +90,9 @@ void Row::enter_row(std::unique_ptr<Passenger> passenger) {
 void Row::sit() {
     for(size_t i = 0; i < static_cast<size_t>(seats_in_row_); ++i) {
         if (buffer_[i] == nullptr) {
+            continue;
+        }
+        if (buffer_[i]->seat_position() != static_cast<int>(i)) {
             continue;
         }
         std::unique_ptr<Passenger> passenger_ptr = std::move(buffer_[i]);

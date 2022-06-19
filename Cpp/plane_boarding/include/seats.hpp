@@ -35,20 +35,19 @@ private:
 class Row {
 public:
     Row(int row_nr, int seats_in_row);
-//    Row(Row&& row);
+    Row(Row&& row);
 
     int row_nr() const { return row_nr_; }
     int seats_nr() const { return static_cast<int>(seats_.size()); }
-//    int L_buffer_size() const { return static_cast<int>(L_buffer_.size()); }
-//    int H_buffer_size() const { return static_cast<int>(H_buffer_.size()); }
 
-    const Seat& operator[](std::size_t position) const { return seats_[position]; }
-    Seat& operator[](std::size_t position) { return seats_[position]; }
+    const std::vector<Seat>& seat() const {return seats_; }
+    const std::vector<std::unique_ptr<Passenger>>& buffer() const { return buffer_; }
 
-//    bool may_passenger_enter_row(std::unique_ptr<)
+    void step_forward_row();
+    bool may_passenger_enter_row(int row_nr, int seat_nr) const;
     void enter_row(std::unique_ptr<Passenger> passenger);
     void sit();
-//    std::unique_ptr<Passenger> leave_row();
+
 
 
 private:
@@ -58,8 +57,7 @@ private:
     size_t first_higher_seat;
     std::vector<Seat> seats_;
     std::vector<std::unique_ptr<Passenger>> buffer_;
-//    std::stack<std::unique_ptr<Passenger>> L_buffer_;
-//    std::stack<std::unique_ptr<Passenger>> H_buffer_;
+
 };
 
 #endif //PLANE_BOARDING_SEATS_HPP
