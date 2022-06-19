@@ -13,7 +13,8 @@
 
 enum class QueueAlgorithm {
     BackToFront,
-    FrontToBack
+    FrontToBack,
+    Wiki,
 
 };
 

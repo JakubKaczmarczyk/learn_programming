@@ -33,7 +33,13 @@ void Board::create_outer_queue(QueueAlgorithm algorithm) {
                 }
             }
             break;
-        default:
+        case QueueAlgorithm::Wiki:
+            std::vector<int> seats_numbers = {0,5,1,4,2,3};
+            for(auto const& seat_it : seats_numbers) {
+                for (int row_it = rows_nr_ - 1; row_it >= 0; --row_it) {
+                    outer_queue_.push_back(std::make_unique<Passenger>(row_it, seat_it, 1, 2));
+                }
+            }
             break;
     }
 }
