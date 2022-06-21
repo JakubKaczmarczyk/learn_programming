@@ -10,7 +10,8 @@
 
 class Passenger {
 public:
-    Passenger(int seat_row, int seat_position, int loading_luggage_time=1, int taking_luggage_time=1) :
+    Passenger(unsigned int seat_row, unsigned int seat_position, unsigned int loading_luggage_time=1,
+              unsigned int taking_luggage_time=1) :
             id_(next_id_), seat_row_(seat_row),
             seat_position_(seat_position),
             is_sitting_(false),
@@ -21,11 +22,11 @@ public:
 
     static void reset_id() { next_id_ = 1; }
 
-    int get_id() const { return id_; }
-    int seat_row() const { return seat_row_; }
-    int seat_position() const { return seat_position_; }
-    int loading_luggage_time() const { return loading_luggage_time_; }
-    int taking_luggage_time() const {return taking_luggage_time_; }
+    unsigned int get_id() const { return id_; }
+    unsigned int seat_row() const { return seat_row_; }
+    unsigned int seat_position() const { return seat_position_; }
+    unsigned int loading_luggage_time() const { return loading_luggage_time_; }
+    unsigned int taking_luggage_time() const {return taking_luggage_time_; }
 
     void sit() {is_sitting_ = true; }
     void stand_up() {is_sitting_ = false;}
@@ -39,15 +40,15 @@ public:
     ~Passenger() = default;
 
 private:
-    inline static int next_id_ = 1;
-    int id_;
-    int seat_row_;
-    int seat_position_;
+    inline static unsigned int next_id_ = 1;
+    unsigned int id_;
+    unsigned int seat_row_;
+    unsigned int seat_position_;
     bool is_sitting_;
-    int loading_luggage_time_;
-    int taking_luggage_time_;
+    unsigned int loading_luggage_time_;
+    unsigned int taking_luggage_time_;
     bool has_luggage_;
-    int luggage_counter_;
+    unsigned int luggage_counter_;
 
 };
 #endif //PLANE_BOARDING_PASSENGER_HPP

@@ -6,22 +6,22 @@
 #include "board.hpp"
 
 TEST(BoardTest, createBoard) {
-    Board board(10, 6);
-    EXPECT_EQ(board.rows_nr(), 10);
-    EXPECT_EQ(board.seats_nr(), 6);
+    Board board(10U, 6U);
+    EXPECT_EQ(board.rows_nr(), 10U);
+    EXPECT_EQ(board.seats_nr(), 6U);
 }
 
 TEST(BoardTest, outerQueueTest) {
-    Board board(10, 6);
+    Board board(10U, 6U);
     board.create_outer_queue(QueueAlgorithm::BackToFront);
-    EXPECT_EQ(board.outer_queue().size(), 10 * 6);
+    EXPECT_EQ(board.outer_queue().size(), 10U * 6U);
 
 }
 
 TEST(BoardTest, enqueueTest) {
-    Board board(10, 6);
+    Board board(10U, 6U);
     board.create_outer_queue(QueueAlgorithm::BackToFront);
-    EXPECT_EQ(board.outer_queue().size(), 60);
+    EXPECT_EQ(board.outer_queue().size(), 60U);
     EXPECT_NE(board.outer_queue()[59], nullptr);
     EXPECT_EQ(board.aisle()[0], nullptr);
     board.enqueue_passenger();

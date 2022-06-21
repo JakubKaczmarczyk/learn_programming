@@ -6,7 +6,7 @@
 #define PLANE_BOARDING_BOARD_HPP
 
 #include <functional>
-#include "seats.hpp"
+#include "seats_rows.hpp"
 #include "passenger.hpp"
 
 enum class QueueAlgorithm {
@@ -18,10 +18,10 @@ enum class QueueAlgorithm {
 
 class Board {
 public:
-    Board(int rows_nr, int seats_in_row);
+    Board(unsigned int rows_nr, unsigned int seats_in_row);
 
-    int rows_nr() const { return rows_nr_; }
-    int seats_nr() const {return seats_nr_; }
+    unsigned int rows_nr() const { return rows_nr_; }
+    unsigned int seats_nr() const {return seats_nr_; }
     const std::vector<Row>& rows() const {return rows_; }
     const std::vector<std::unique_ptr<Passenger>>& aisle() const { return aisle_; }
     const std::vector<std::unique_ptr<Passenger>>& outer_queue() const {return outer_queue_; }
@@ -41,8 +41,8 @@ public:
 
 
 private:
-    int rows_nr_;
-    int seats_nr_;
+    unsigned int rows_nr_;
+    unsigned int seats_nr_;
     std::vector<Row> rows_;
     std::vector<std::unique_ptr<Passenger>> aisle_;
     std::vector<std::unique_ptr<Passenger>> outer_queue_;

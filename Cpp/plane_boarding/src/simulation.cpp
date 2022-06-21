@@ -3,7 +3,7 @@
 //
 #include "board.hpp"
 
-int simulate_board(int row_nr, int seats_in_row, QueueAlgorithm algorithm, std::string raport_file_name) {
+int simulate_board(unsigned int row_nr, unsigned int seats_in_row, QueueAlgorithm algorithm, std::string raport_file_name) {
     Board board(row_nr, seats_in_row);
     board.clear_report(raport_file_name);
     board.create_outer_queue(algorithm);

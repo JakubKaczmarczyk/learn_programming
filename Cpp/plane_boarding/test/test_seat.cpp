@@ -1,7 +1,7 @@
 //
 // Created by kubak on 16.06.2022.
 //
-#include "seats.hpp"
+#include "seats_rows.hpp"
 #include "gtest/gtest.h"
 
 TEST(SeatTest, createSeat) {

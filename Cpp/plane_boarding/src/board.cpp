@@ -5,16 +5,18 @@
 #include "board.hpp"
 #include <sstream>
 #include <fstream>
+#include <cmath>
+#include <limits>
 
 
-Board::Board(int row_number, int seats_in_row) {
-    rows_nr_ = row_number;
+Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
+    rows_nr_ = rows_nr;
     seats_nr_ = seats_in_row;
-    for(int i = 0; i < row_number; ++i) {
+    for(unsigned int i = 0; i < rows_nr; ++i) {
         rows_.push_back(Row(i, seats_nr_));
         aisle_.push_back(nullptr);
     }
-    for(int i = 0; i <rows_nr_*seats_nr_; ++i) {
+    for(unsigned int i = 0; i < rows_nr_*seats_nr_; ++i) {
         outer_queue_.push_back(nullptr);
     }
 }
@@ -24,25 +26,25 @@ void Board::create_outer_queue(QueueAlgorithm algorithm) {
     size_t queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
     switch (algorithm) {
         case QueueAlgorithm::BackToFront:
-            for(int row_it = rows_nr_-1; row_it >= 0; --row_it) {
-                for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+            for(unsigned int row_it = rows_nr_-1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
+                for(unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
                     outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
                     --queue_it;
                 }
             }
             break;
         case QueueAlgorithm::FrontToBack:
-            for(int row_it = 0; row_it < rows_nr_; ++row_it) {
-                for(int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+            for(unsigned int row_it = 0; row_it < rows_nr_; ++row_it) {
+                for(unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
                     outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
                     --queue_it;
                 }
             }
             break;
         case QueueAlgorithm::Wiki:
-            std::vector<int> seats_numbers = {0,5,1,4,2,3};
+            std::vector<unsigned int> seats_numbers = {0,5,1,4,2,3};
             for(auto const& seat_it : seats_numbers) {
-                for (int row_it = rows_nr_ - 1; row_it >= 0; --row_it) {
+                for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
                     outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
                     --queue_it;
                 }
@@ -75,7 +77,7 @@ void Board::enqueue_passenger() {
 
 void Board::step_forward() {
     for(size_t i = static_cast<size_t>(rows_nr_-1); i >= 1; --i) {
-        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i-1]->seat_row() != static_cast<int>(i-1)) {
+        if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i-1]->seat_row() != static_cast<unsigned int>(i-1)) {
             aisle_[i] = std::move(aisle_[i-1]);
             aisle_[i-1] = nullptr;
         }
@@ -89,7 +91,7 @@ void Board::load_luggage() {
         if (aisle_[i] == nullptr) {
             continue;
         }
-        if (aisle_[i]->seat_row() != static_cast<int>(i) ) {
+        if (aisle_[i]->seat_row() != static_cast<unsigned int>(i) ) {
             continue;
         }
         aisle_[i] -> load_luggage();
@@ -150,6 +152,13 @@ void Board::clear_report(std::string name) const {
     }
     f1.close();
 }
+
+//std::string upper_line_(unsigned int seats_nr, unsigned int rows_nr) {
+//    std::ostringstream oss;
+//    auto position_width = static_cast<unsigned int>(log10(static_cast<double>(seats_nr)) +
+//            log10(static_cast<double>(rows_nr)) + 2);
+//    return 0;
+//}
 void Board::generate_tour_report(int tour, std::string name) const {
     std::fstream f(name, std::ios::app);
     if(f.is_open()) {
@@ -157,13 +166,13 @@ void Board::generate_tour_report(int tour, std::string name) const {
         // upper line
         {
             // Queue
-            for (int i = 0; i < seats_nr_ * rows_nr_; ++i) {
+            for (unsigned int i = 0; i < seats_nr_ * rows_nr_; ++i) {
                 f << "XXX";
             }
             // crossing
             f << "X";
             // board
-            for (int i = 0; i < rows_nr_; ++i) {
+            for (unsigned int i = 0; i < rows_nr_; ++i) {
                 f << "XXX";
             }
             f << "\n";
@@ -179,7 +188,7 @@ void Board::generate_tour_report(int tour, std::string name) const {
                 } else {
                     empty_space = "---";
                 }
-                for (int i = 0; i < seats_nr_ * rows_nr_; ++i) {
+                for (unsigned int i = 0; i < seats_nr_ * rows_nr_; ++i) {
                     f << empty_space;
                 }
                 // crossing
@@ -231,7 +240,7 @@ void Board::generate_tour_report(int tour, std::string name) const {
                 } else {
                     empty_space = "   ";
                 }
-                for (int i = 0; i < seats_nr_ * rows_nr_; ++i) {
+                for (unsigned int i = 0; i < seats_nr_ * rows_nr_; ++i) {
                     f << empty_space;
                 }
                 // crossing
