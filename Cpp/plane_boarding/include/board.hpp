@@ -36,8 +36,15 @@ public:
     void step_forward_row();
     void sit();
     bool is_boarding_finished() const;
+
+
+    // raports
     void clear_report(std::string name) const;
-    void generate_tour_report(int tour, std::string name) const;
+    void generate_tour_report(int tour, std::string name) const ;
+
+
+
+
 
 
 private:
@@ -47,5 +54,9 @@ private:
     std::vector<std::unique_ptr<Passenger>> aisle_;
     std::vector<std::unique_ptr<Passenger>> outer_queue_;
 };
+
+size_t get_position_width(const Board& board);
+std::string upper_line(const Board& board);
+std::string line_passenger(const Board& board, unsigned int line_nr);
 
 #endif //PLANE_BOARDING_BOARD_HPP
