@@ -278,34 +278,8 @@ void Board::generate_tour_report(int turn, std::string name) const {
         for (unsigned int seat_it = 0; seat_it < seats_nr_ / 2; ++seat_it) {
             f << line_passenger(*this, seat_it);
         }
-
-
         // Queue and aisle_
         f << queue_aisle_line(*this);
-//        {
-//            // Queue
-//            {
-//                for (auto &passenger: outer_queue_) {
-//                    if (passenger != nullptr) {
-//                        f << passenger->seat_row() << passenger->seat_position() << " ";
-//                    } else {
-//                        f << "   ";
-//                    }
-//                }
-//            }
-//            // crossing
-//            f << " ";
-//            // aisle_
-//            for (auto &it: aisle_) {
-//                if (it == nullptr) {
-//                    f << "   ";
-//                } else {
-//                    f << it->seat_row() << it->seat_position() << " ";
-//                }
-//            }
-//            f << "\n";
-//        }
-
         // seats lower
         for (unsigned int seat_it = seats_nr_ / 2; seat_it < seats_nr_; ++seat_it) {
             f << line_passenger(*this, seat_it);
