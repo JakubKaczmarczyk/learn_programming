@@ -40,7 +40,7 @@ public:
 
     // raports
     void clear_report(std::string name) const;
-    void generate_tour_report(int tour, std::string name) const ;
+    void generate_tour_report(int turn, std::string name) const ;
 
 
 

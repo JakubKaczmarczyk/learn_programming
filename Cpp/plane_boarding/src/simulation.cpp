@@ -10,9 +10,9 @@ int simulate_board(unsigned int row_nr, unsigned int seats_in_row, QueueAlgorith
     int i = 0;
     while(!board.is_boarding_finished()) {
         board.generate_tour_report(i, raport_file_name);
+        board.sit();
         board.step_forward_row();
         board.enter_rows();
-        board.sit();
         board.load_luggage();
         board.step_forward();
         board.enqueue_passenger();

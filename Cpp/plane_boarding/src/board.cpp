@@ -169,7 +169,7 @@ size_t get_position_width(const Board& board) {
     return static_cast<unsigned int>(seats_w + rows_w);
 }
 
-std::string position_str_width(unsigned int act_row, unsigned int rows_nr,unsigned int act_seat, unsigned int seats_nr) {
+std::string position_correct_width(unsigned int act_row, unsigned int rows_nr, unsigned int act_seat, unsigned int seats_nr) {
     std::ostringstream actual_pos;
     size_t actual_row_digit_nr = digit_nr(act_row);
     for(size_t i = actual_row_digit_nr; i < digit_max_index_nr(rows_nr); ++i) {
@@ -178,7 +178,7 @@ std::string position_str_width(unsigned int act_row, unsigned int rows_nr,unsign
     actual_pos << act_row;
     size_t actual_seat_digit_nr = digit_nr(act_seat);
     for(size_t i = actual_seat_digit_nr; i < digit_max_index_nr(seats_nr); ++i) {
-        actual_pos << ' ';
+        actual_pos << '0';
     }
     actual_pos << act_seat;
     return actual_pos.str();
@@ -190,13 +190,13 @@ std::string upper_line(const Board& board) {
     unsigned int rows_nr = board.rows_nr();
     std::ostringstream oss;
     size_t position_width = get_position_width(board);
-    std::string border = std::string(position_width, 'X');
+    std::string empty_position = std::string(position_width, 'X');
     for(unsigned int i = 0; i < seats_nr*rows_nr; ++i) {
-        oss << border << 'X';
+        oss << empty_position << 'X';
     }
     oss << 'X';
     for(unsigned int i = 0; i < rows_nr; ++i) {
-        oss << border << 'X';
+        oss << empty_position << 'X' << empty_position << 'X';
     }
 
     return oss.str();
@@ -219,23 +219,19 @@ std::string line_passenger(const Board& board, unsigned int line_nr) {
         oss << empty_queue_string << empty_char_filler;
     }
     oss << '|';
+    std::string empty_position(position_width, ' ');
 
     for(const auto& row_it : board.rows()) {
         std::ostringstream actual_pos;
+        if (row_it.buffer()[line_nr] != nullptr) {
+            const std::unique_ptr<Passenger>* passenger_ptr = &row_it.buffer()[line_nr];
+            actual_pos << position_correct_width((*passenger_ptr)->seat_row(), rows_nr, (*passenger_ptr)->seat_position(), seats_nr);
+        } else {
+            actual_pos << empty_position;
+        }
+        actual_pos << ' ';
         if(row_it.seat()[line_nr].is_taken()) {
-
-//            size_t actual_row_digit_nr = digit_nr(row_it.row_nr());
-//            for(size_t i = actual_row_digit_nr; i < digit_max_index_nr(rows_nr); ++i) {
-//                actual_pos << ' ';
-//            }
-//            actual_pos << row_it.row_nr();
-//            size_t actual_seat_digit_nr = digit_nr(line_nr);
-//            for(size_t i = actual_seat_digit_nr; i < digit_max_index_nr(seats_nr); ++i) {
-//                actual_pos << ' ';
-//            }
-//            actual_pos << line_nr;
-            actual_pos << position_str_width(row_it.row_nr(), rows_nr, line_nr, seats_nr);
-
+            actual_pos << position_correct_width(row_it.row_nr(), rows_nr, line_nr, seats_nr);
         } else {
             actual_pos << std::string(position_width, ' ');
         }
@@ -244,91 +240,76 @@ std::string line_passenger(const Board& board, unsigned int line_nr) {
     oss << '\n';
     return oss.str();
 }
-void Board::generate_tour_report(int tour, std::string name) const {
+
+std::string queue_aisle_line(const Board& board) {
+    unsigned int seats_nr = board.seats_nr();
+    unsigned int rows_nr = board.rows_nr();
+    std::ostringstream oss;
+    size_t position_width = get_position_width(board);
+    std::string empty_position(position_width, ' ');
+    for(auto& passenger : board.outer_queue()) {
+        if(passenger == nullptr) {
+            oss << empty_position;
+        } else {
+            oss << position_correct_width(passenger->seat_row(), rows_nr, passenger->seat_position(), seats_nr);
+        }
+        oss << ' ';
+    }
+    oss << ' ';
+    for(auto& passenger : board.aisle()) {
+
+        if(passenger == nullptr) {
+            oss << empty_position;
+        } else {
+            oss << position_correct_width(passenger->seat_row(), rows_nr, passenger->seat_position(), seats_nr);
+        }
+        oss << ' ';
+        oss << empty_position << ' ';
+    }
+    oss << '\n';
+    return oss.str();
+}
+void Board::generate_tour_report(int turn, std::string name) const {
     std::fstream f(name, std::ios::app);
     if(f.is_open()) {
         f << upper_line(*this);
-        f << "\nTour " << tour <<" Queue:\n";
+        f << "\nTurn " << turn << " Queue:\n";
         // seats upper
-        for(unsigned int seat_it = 0; seat_it < seats_nr_/2; ++seat_it) {
+        for (unsigned int seat_it = 0; seat_it < seats_nr_ / 2; ++seat_it) {
             f << line_passenger(*this, seat_it);
-//            // Queue
-//            std::string empty_space;
-//            if (seat_it < static_cast<size_t>(seats_nr_/2 - 1)) {
-//                empty_space = "   ";
-//            } else {
-//                empty_space = "---";
-//            }
-//            for (unsigned int i = 0; i < seats_nr_ * rows_nr_; ++i) {
-//                f << empty_space;
-//            }
-//            // crossing
-//            f << "|";
-//            // board
-//            for (auto &row_it: rows_) {
-//                if (row_it.seat()[seat_it].is_taken()) {
-//                    f << row_it.seat()[seat_it].get_row() << row_it.seat()[seat_it].get_position() << "|";
-//                } else {
-//                    f << "  |";
-//                }
-//            }
-//            f << "\n";
         }
 
 
         // Queue and aisle_
-        {
-            // Queue
-            {
-                for (auto& passenger : outer_queue_) {
-                    if (passenger != nullptr) {
-                        f << passenger->seat_row() << passenger->seat_position() << " ";
-                    } else {
-                        f << "   ";
-                    }
-                }
-            }
-            // crossing
-            f << " ";
-            // aisle_
-            for(auto& it : aisle_) {
-                if (it == nullptr) {
-                    f << "   ";
-                } else {
-                    f << it->seat_row() << it->seat_position() << " ";
-                }
-            }
-            f << "\n";
-        }
+        f << queue_aisle_line(*this);
+//        {
+//            // Queue
+//            {
+//                for (auto &passenger: outer_queue_) {
+//                    if (passenger != nullptr) {
+//                        f << passenger->seat_row() << passenger->seat_position() << " ";
+//                    } else {
+//                        f << "   ";
+//                    }
+//                }
+//            }
+//            // crossing
+//            f << " ";
+//            // aisle_
+//            for (auto &it: aisle_) {
+//                if (it == nullptr) {
+//                    f << "   ";
+//                } else {
+//                    f << it->seat_row() << it->seat_position() << " ";
+//                }
+//            }
+//            f << "\n";
+//        }
 
         // seats lower
-        {
-            for(size_t seat_it = static_cast<size_t>(seats_nr_/2); seat_it < static_cast<size_t >(seats_nr_); ++seat_it) {
-                // Queue
-                std::string empty_space;
-                if (seat_it == static_cast<size_t>(seats_nr_/2)) {
-                    empty_space = "---";
-                } else {
-                    empty_space = "   ";
-                }
-                for (unsigned int i = 0; i < seats_nr_ * rows_nr_; ++i) {
-                    f << empty_space;
-                }
-                // crossing
-                f << "|";
-                // board
-                for (auto &row_it: rows_) {
-                    if (row_it.seat()[seat_it].is_taken()) {
-                        f << row_it.seat()[seat_it].get_row() << row_it.seat()[seat_it].get_position() << "|";
-                    } else {
-                        f << "  |";
-                    }
-                }
-                f << "\n";
-            }
+        for (unsigned int seat_it = seats_nr_ / 2; seat_it < seats_nr_; ++seat_it) {
+            f << line_passenger(*this, seat_it);
         }
-        f << "\n";
-        }
-
+    }
     f.close();
 }
