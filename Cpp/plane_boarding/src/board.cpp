@@ -13,7 +13,7 @@ Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
     rows_nr_ = rows_nr;
     seats_nr_ = seats_in_row;
     for(unsigned int i = 0; i < rows_nr; ++i) {
-        rows_.push_back(Row(i, seats_nr_));
+        rows_.emplace_back(i, seats_nr_);
         aisle_.push_back(nullptr);
     }
     for(unsigned int i = 0; i < rows_nr_*seats_nr_; ++i) {
@@ -21,92 +21,31 @@ Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
     }
 }
 
+void Board::create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_type, unsigned int manage_luggage_time,
+                          unsigned int max_time, unsigned int min_time) {
 
-void
-Board::create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_type, unsigned int load_luggage_time,
-                          unsigned int take_luggage_time) {
-    if (luggage_time_type == LuggageTime::Random) {
-        load_luggage_time = static_cast<unsigned int>(rand() % (4 - 1 + 1) + 1);
-    }
-    size_t queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
+    random_luggage_time = luggage_time_type == LuggageTime::Random;
+    fixed_manage_luggage_time_ = manage_luggage_time;
+    random_luggage_max_time_ = max_time;
+    random_luggage_min_time_ = min_time;
+
     switch (algorithm) {
         case QueueAlgorithm::BackToFront: {
-            for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
-                for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
-                    --queue_it;
-                }
-            }
+            back_to_front_queue();
             break;
         }
         case QueueAlgorithm::FrontToBack: {
-            for (unsigned int row_it = 0; row_it < rows_nr_; ++row_it) {
-                for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
-                    --queue_it;
-                }
-            }
+            front_to_back_queue();
             break;
         }
+
         case QueueAlgorithm::Wiki: {
-            std::vector<unsigned int> seats_numbers;
-            unsigned int down_it = 0U;
-            unsigned int up_it = seats_nr_-1;
-            while (down_it<up_it) {
-                seats_numbers.push_back(down_it);
-                seats_numbers.push_back(up_it);
-                ++down_it;
-                --up_it;
-            }
-            for (auto const &seat_it: seats_numbers) {
-                for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
-                    --queue_it;
-                }
-            }
+            wiki_queue();
             break;
         }
+
         case QueueAlgorithm::EvenWindows: {
-            std::vector<std::pair<unsigned int, unsigned int>> seats_pairs;
-            unsigned int down_it = 0U;
-            unsigned int up_it = seats_nr_-1;
-            while (down_it<up_it) {
-                seats_pairs.push_back(std::make_pair(down_it, up_it));
-                ++down_it;
-                --up_it;
-            }
-            for(auto& pair_it : seats_pairs) {
-                unsigned int lower_sit = pair_it.first;
-                unsigned int upper_sit = pair_it.second;
-                for(unsigned int row_it = rows_nr_ - 1;
-                    (row_it != std::numeric_limits<unsigned int>::max() &&
-                    row_it != std::numeric_limits<unsigned int>::max() -1);
-                    row_it = row_it - 2) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, lower_sit,load_luggage_time,take_luggage_time);
-                    --queue_it;
-                }
-                for(unsigned int row_it = rows_nr_ - 1;
-                    (row_it != std::numeric_limits<unsigned int>::max() &&
-                     row_it != std::numeric_limits<unsigned int>::max() -1);
-                    row_it = row_it - 2) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, upper_sit,load_luggage_time,take_luggage_time);
-                    --queue_it;
-                }
-                for (unsigned int row_it = rows_nr_ - 2;
-                     (row_it != std::numeric_limits<unsigned int>::max() &&
-                      row_it != std::numeric_limits<unsigned int>::max() - 1);
-                     row_it = row_it - 2) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, lower_sit, 1U, 1U);
-                    --queue_it;
-                }
-                for (unsigned int row_it = rows_nr_ - 2;
-                     (row_it != std::numeric_limits<unsigned int>::max() &&
-                      row_it != std::numeric_limits<unsigned int>::max() - 1);
-                     row_it = row_it - 2) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, upper_sit, 1U, 1U);
-                    --queue_it;
-                }
-            }
+            even_windows_queue();
             break;
         }
         default: {
@@ -115,6 +54,96 @@ Board::create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_typ
     }
 }
 
+unsigned int Board::luggage_time() const {
+    if(random_luggage_time) {
+        return static_cast<unsigned int>(rand()) % (random_luggage_max_time_ - random_luggage_min_time_ + 1) + random_luggage_min_time_;
+    } else {
+        return fixed_manage_luggage_time_;
+    }
+}
+
+void Board::back_to_front_queue() {
+    auto queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
+    for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
+        for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, luggage_time(), luggage_time());
+            --queue_it;
+        }
+    }
+}
+
+void Board::front_to_back_queue() {
+    auto queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
+    for (unsigned int row_it = 0; row_it < rows_nr_; ++row_it) {
+        for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, luggage_time(), luggage_time());
+            --queue_it;
+        }
+    }
+}
+
+void Board::wiki_queue() {
+    auto queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
+    std::vector<unsigned int> seats_numbers;
+    unsigned int down_it = 0U;
+    unsigned int up_it = seats_nr_-1;
+    while (down_it<up_it) {
+        seats_numbers.push_back(down_it);
+        seats_numbers.push_back(up_it);
+        ++down_it;
+        --up_it;
+    }
+    for (auto const &seat_it: seats_numbers) {
+        for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, luggage_time(), luggage_time());
+            --queue_it;
+        }
+    }
+}
+
+void Board::even_windows_queue() {
+    auto queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
+    std::vector<std::pair<unsigned int, unsigned int>> seats_pairs;
+    unsigned int down_it = 0U;
+    unsigned int up_it = seats_nr_-1;
+    while (down_it<up_it) {
+        seats_pairs.emplace_back(down_it, up_it);
+        ++down_it;
+        --up_it;
+    }
+    for(auto& pair_it : seats_pairs) {
+        unsigned int lower_sit = pair_it.first;
+        unsigned int upper_sit = pair_it.second;
+        for(unsigned int row_it = rows_nr_ - 1;
+            (row_it != std::numeric_limits<unsigned int>::max() &&
+             row_it != std::numeric_limits<unsigned int>::max() -1);
+            row_it = row_it - 2) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, lower_sit, luggage_time(), luggage_time());
+            --queue_it;
+        }
+        for(unsigned int row_it = rows_nr_ - 1;
+            (row_it != std::numeric_limits<unsigned int>::max() &&
+             row_it != std::numeric_limits<unsigned int>::max() -1);
+            row_it = row_it - 2) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, upper_sit, luggage_time(), luggage_time());
+            --queue_it;
+        }
+        for (unsigned int row_it = rows_nr_ - 2;
+             (row_it != std::numeric_limits<unsigned int>::max() &&
+              row_it != std::numeric_limits<unsigned int>::max() - 1);
+             row_it = row_it - 2) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, lower_sit, luggage_time(), luggage_time());
+            --queue_it;
+        }
+        for (unsigned int row_it = rows_nr_ - 2;
+             (row_it != std::numeric_limits<unsigned int>::max() &&
+              row_it != std::numeric_limits<unsigned int>::max() - 1);
+             row_it = row_it - 2) {
+            outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, upper_sit, luggage_time(), luggage_time());
+            --queue_it;
+        }
+    }
+}
 
 std::string Board::outer_queue_string() const {
     std::ostringstream oss;
@@ -138,7 +167,7 @@ void Board::enqueue_passenger() {
 }
 
 void Board::step_forward() {
-    for(size_t i = static_cast<size_t>(rows_nr_-1); i >= 1; --i) {
+    for(auto i = static_cast<size_t>(rows_nr_-1); i >= 1; --i) {
         if (aisle_[i-1] != nullptr && aisle_[i] == nullptr && aisle_[i-1]->seat_row() != static_cast<unsigned int>(i-1)) {
             aisle_[i] = std::move(aisle_[i-1]);
             aisle_[i-1] = nullptr;
@@ -207,12 +236,31 @@ bool Board::is_boarding_finished() const {
     return true;
 }
 
-void Board::clear_report(std::string name) const {
-    std::fstream f1(name, std::ios::out);
+void Board::clear_report(const std::string& report_file_name) {
+    std::fstream f1(report_file_name, std::ios::out);
     if(f1.is_open()) {
         f1 << "";
     }
     f1.close();
+}
+
+void Board::generate_tour_report(int turn, const std::string& report_file_name) const {
+    std::fstream f(report_file_name, std::ios::app);
+    if(f.is_open()) {
+        f << upper_line(*this);
+        f << "\nTurn " << turn << " Queue:\n";
+        // seats upper
+        for (unsigned int seat_it = 0; seat_it < seats_nr_ / 2; ++seat_it) {
+            f << line_passenger(*this, seat_it);
+        }
+        // Queue and aisle_
+        f << queue_aisle_line(*this);
+        // seats lower
+        for (unsigned int seat_it = seats_nr_ / 2; seat_it < seats_nr_; ++seat_it) {
+            f << line_passenger(*this, seat_it);
+        }
+    }
+    f.close();
 }
 
 size_t digit_nr(unsigned int nr) {
@@ -330,22 +378,4 @@ std::string queue_aisle_line(const Board& board) {
     }
     oss << '\n';
     return oss.str();
-}
-void Board::generate_tour_report(int turn, std::string name) const {
-    std::fstream f(name, std::ios::app);
-    if(f.is_open()) {
-        f << upper_line(*this);
-        f << "\nTurn " << turn << " Queue:\n";
-        // seats upper
-        for (unsigned int seat_it = 0; seat_it < seats_nr_ / 2; ++seat_it) {
-            f << line_passenger(*this, seat_it);
-        }
-        // Queue and aisle_
-        f << queue_aisle_line(*this);
-        // seats lower
-        for (unsigned int seat_it = seats_nr_ / 2; seat_it < seats_nr_; ++seat_it) {
-            f << line_passenger(*this, seat_it);
-        }
-    }
-    f.close();
 }

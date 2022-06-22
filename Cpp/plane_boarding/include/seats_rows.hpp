@@ -57,6 +57,8 @@ private:
     size_t first_higher_seat;
     std::vector<Seat> seats_;
     std::vector<std::unique_ptr<Passenger>> buffer_;
+    std::vector<unsigned int> buffer_crossing_counter_;
+    unsigned int crossing_taken_seat_time = 2;
 
 };
 
