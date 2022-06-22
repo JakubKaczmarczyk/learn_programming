@@ -17,6 +17,11 @@ enum class QueueAlgorithm {
 
 };
 
+enum class LuggageTime {
+    Random,
+    Fixed
+};
+
 class Board {
 public:
     Board(unsigned int rows_nr, unsigned int seats_in_row);
@@ -26,8 +31,8 @@ public:
     const std::vector<Row>& rows() const {return rows_; }
     const std::vector<std::unique_ptr<Passenger>>& aisle() const { return aisle_; }
     const std::vector<std::unique_ptr<Passenger>>& outer_queue() const {return outer_queue_; }
-    void create_outer_queue(QueueAlgorithm algorithm = QueueAlgorithm::BackToFront, unsigned int load_luggage_time=1U,
-                            unsigned int take_luggage_time=1U);
+    void create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_type,
+                            unsigned int load_luggage_time = 1U, unsigned int take_luggage_time = 1U);
 
 
     std::string outer_queue_string() const;

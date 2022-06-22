@@ -23,7 +23,11 @@ Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
 
 
 void
-Board::create_outer_queue(QueueAlgorithm algorithm, unsigned int load_luggage_time, unsigned int take_luggage_time) {
+Board::create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_type, unsigned int load_luggage_time,
+                          unsigned int take_luggage_time) {
+    if (luggage_time_type == LuggageTime::Random) {
+        load_luggage_time = static_cast<unsigned int>(rand() % (4 - 1 + 1) + 1);
+    }
     size_t queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
     switch (algorithm) {
         case QueueAlgorithm::BackToFront: {
