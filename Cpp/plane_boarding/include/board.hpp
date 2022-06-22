@@ -13,6 +13,7 @@ enum class QueueAlgorithm {
     BackToFront,
     FrontToBack,
     Wiki,
+    EvenWindows
 
 };
 
@@ -25,7 +26,8 @@ public:
     const std::vector<Row>& rows() const {return rows_; }
     const std::vector<std::unique_ptr<Passenger>>& aisle() const { return aisle_; }
     const std::vector<std::unique_ptr<Passenger>>& outer_queue() const {return outer_queue_; }
-    void create_outer_queue(QueueAlgorithm algorithm=QueueAlgorithm::BackToFront);
+    void create_outer_queue(QueueAlgorithm algorithm = QueueAlgorithm::BackToFront, unsigned int load_luggage_time=1U,
+                            unsigned int take_luggage_time=1U);
 
 
     std::string outer_queue_string() const;

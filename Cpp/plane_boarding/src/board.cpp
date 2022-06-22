@@ -22,34 +22,78 @@ Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
 }
 
 
-void Board::create_outer_queue(QueueAlgorithm algorithm) {
+void
+Board::create_outer_queue(QueueAlgorithm algorithm, unsigned int load_luggage_time, unsigned int take_luggage_time) {
     size_t queue_it = static_cast<size_t>(rows_nr_*seats_nr_-1);
     switch (algorithm) {
-        case QueueAlgorithm::BackToFront:
-            for(unsigned int row_it = rows_nr_-1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
-                for(unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+        case QueueAlgorithm::BackToFront: {
+            for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
+                for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
                     --queue_it;
                 }
             }
             break;
-        case QueueAlgorithm::FrontToBack:
-            for(unsigned int row_it = 0; row_it < rows_nr_; ++row_it) {
-                for(unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+        }
+        case QueueAlgorithm::FrontToBack: {
+            for (unsigned int row_it = 0; row_it < rows_nr_; ++row_it) {
+                for (unsigned int seat_it = 0; seat_it < seats_nr_; ++seat_it) {
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
                     --queue_it;
                 }
             }
             break;
-        case QueueAlgorithm::Wiki:
-            std::vector<unsigned int> seats_numbers = {0,5,1,4,2,3};
-            for(auto const& seat_it : seats_numbers) {
+        }
+        case QueueAlgorithm::Wiki: {
+//            std::vector<unsigned int> seats_numbers = {0, 5, 1, 4, 2, 3};
+            std::vector<unsigned int> seats_numbers;
+            unsigned int down_it = 0U;
+            unsigned int up_it = seats_nr_-1;
+            while (down_it<up_it) {
+                seats_numbers.push_back(down_it);
+                seats_numbers.push_back(up_it);
+                ++down_it;
+                --up_it;
+            }
+            for (auto const &seat_it: seats_numbers) {
                 for (unsigned int row_it = rows_nr_ - 1; row_it != std::numeric_limits<unsigned int>::max(); --row_it) {
-                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, 1, 2);
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seat_it, load_luggage_time, take_luggage_time);
                     --queue_it;
                 }
             }
             break;
+        }
+        case QueueAlgorithm::EvenWindows: {
+            std::vector<unsigned int> seats_numbers;
+            unsigned int down_it = 0U;
+            unsigned int up_it = seats_nr_-1;
+            while (down_it<up_it) {
+                seats_numbers.push_back(down_it);
+                seats_numbers.push_back(up_it);
+                ++down_it;
+                --up_it;
+            }
+            for(unsigned int seats_it : seats_numbers) {
+                for(unsigned int row_it = rows_nr_ - 1;
+                    (row_it != std::numeric_limits<unsigned int>::max() &&
+                    row_it != std::numeric_limits<unsigned int>::max() -1);
+                    row_it = row_it - 2) {
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seats_it,load_luggage_time,take_luggage_time);
+                    --queue_it;
+                }
+                for(unsigned int row_it = rows_nr_ - 2;
+                    (row_it != std::numeric_limits<unsigned int>::max() &&
+                     row_it != std::numeric_limits<unsigned int>::max() -1);
+                    row_it = row_it - 2) {
+                    outer_queue_[queue_it] = std::make_unique<Passenger>(row_it, seats_it,1U,1U);
+                    --queue_it;
+                }
+            }
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 
