@@ -33,6 +33,7 @@ Row::Row(unsigned int row_nr, unsigned int seats_in_row) {
     for(unsigned int i = 0; i <seats_in_row_; ++i) {
         seats_.emplace_back(row_nr_, i);
         buffer_.push_back(nullptr);
+        buffer_crossing_counter_.push_back(1U);
     }
 }
 
@@ -43,21 +44,38 @@ Row::Row(Row &&row) {
     first_higher_seat = row.first_higher_seat;
     seats_ = std::move(row.seats_);
     buffer_ = std::move(row.buffer_);
+    buffer_crossing_counter_ = std::move(row.buffer_crossing_counter_);
 }
 
 void Row::step_forward_row() {
     for(size_t i = 0; i < first_lower_seat_; ++i) {
+        // is step forward sensible?
         if(buffer_[i] == nullptr && buffer_[i+1] != nullptr &&
             buffer_[i+1]->seat_position() <= static_cast<unsigned int>(i)) {
-            buffer_[i] = std::move(buffer_[i+1]);
-            buffer_[i+1] = nullptr;
+            // delay of crossing taken seat
+            if(!seats_[i+1].is_taken() || (seats_[i+1].is_taken() &&
+                buffer_crossing_counter_[i+1] == crossing_taken_seat_time)) {
+                buffer_[i] = std::move(buffer_[i + 1]);
+                buffer_[i + 1] = nullptr;
+                buffer_crossing_counter_[i+1] = 1U;
+            } else {
+                ++buffer_crossing_counter_[i+1];
+            }
         }
     }
     for(auto i = static_cast<size_t>(seats_in_row_-1); i > first_higher_seat; --i) {
+        // is step forward sensible?
         if(buffer_[i] == nullptr && buffer_[i-1] != nullptr &&
         buffer_[i-1]->seat_position() >= static_cast<unsigned int>(i)) {
-            buffer_[i] = std::move(buffer_[i-1]);
-            buffer_[i-1] = nullptr;
+            // delay of crossing taken seat
+            if(!seats_[i-1].is_taken() || (seats_[i-1].is_taken() &&
+                buffer_crossing_counter_[i-1] == crossing_taken_seat_time)) {
+                buffer_[i] = std::move(buffer_[i - 1]);
+                buffer_[i - 1] = nullptr;
+                buffer_crossing_counter_[i-1] = 1;
+            } else {
+                ++buffer_crossing_counter_[i-1];
+            }
         }
     }
 }
@@ -104,19 +122,5 @@ void Row::sit() {
         buffer_[i] = nullptr;
 
     }
-//    if(!L_buffer_.empty()) {
-//        std::unique_ptr<Passenger> passenger = std::move(L_buffer_.top());
-//        size_t seat_index = static_cast<size_t>(passenger->seat_position());
-//        passenger->sit();
-//        seats_[seat_index].take_seat(std::move(passenger));
-//        L_buffer_.pop();
-//    }
-//    if(!H_buffer_.empty()) {
-//        std::unique_ptr<Passenger> passenger = std::move(H_buffer_.top());
-//        size_t seat_index = static_cast<size_t>(passenger->seat_position());
-//        passenger->sit();
-//        seats_[seat_index].take_seat(std::move(passenger));
-//        H_buffer_.pop();
-//    }
 }
 
