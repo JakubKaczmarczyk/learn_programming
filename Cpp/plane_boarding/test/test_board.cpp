@@ -128,7 +128,7 @@ TEST(BoardTest, fullTest) {
         board.enqueue_passenger();
         ++i;
     }
-    EXPECT_GT(i, 17);
+    EXPECT_GT(i, 14);
 }
 //
 //TEST(BoardTest, algorithmTest) {
