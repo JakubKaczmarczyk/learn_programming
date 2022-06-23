@@ -130,29 +130,3 @@ TEST(BoardTest, fullTest) {
     }
     EXPECT_GT(i, 14);
 }
-//
-//TEST(BoardTest, algorithmTest) {
-//    Board board1(2, 4);
-//    board1.create_outer_queue(QueueAlgorithm::BackToFront);
-//    int i = 0;
-//    while(!board1.is_boarding_finished()) {
-//        board1.enter_rows();
-//        board1.sit();
-//        board1.load_luggage();
-//        board1.step_forward();
-//        board1.enqueue_passenger();
-//        ++i;
-//    }
-//    Board board2(2, 4);
-//    board2.create_outer_queue(QueueAlgorithm::FrontToBack);
-//    int j = 0;
-//    while(!board2.is_boarding_finished()) {
-//        board2.enter_rows();
-//        board2.sit();
-//        board2.load_luggage();
-//        board2.step_forward();
-//        board2.enqueue_passenger();
-//        ++j;
-//    }
-//    EXPECT_GT(j, i);
-//}

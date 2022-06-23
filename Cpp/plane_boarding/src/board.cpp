@@ -7,9 +7,13 @@
 #include <fstream>
 #include <cmath>
 #include <limits>
+#include <ctime>
 
 
 Board::Board(unsigned int rows_nr, unsigned int seats_in_row) {
+    if(seats_in_row%2 != 0) {
+        throw std::logic_error("Not even seats");
+    }
     rows_nr_ = rows_nr;
     seats_nr_ = seats_in_row;
     for(unsigned int i = 0; i < rows_nr; ++i) {
@@ -28,6 +32,7 @@ void Board::create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_tim
     fixed_manage_luggage_time_ = manage_luggage_time;
     random_luggage_max_time_ = max_time;
     random_luggage_min_time_ = min_time;
+    srand(static_cast<unsigned int>(time(NULL)));
 
     switch (algorithm) {
         case QueueAlgorithm::BackToFront: {
@@ -258,7 +263,7 @@ void Board::clear_report(const std::string& report_file_name) {
     f1.close();
 }
 
-void Board::generate_tour_report(int turn, const std::string& report_file_name) const {
+void Board::generate_tour_report(unsigned int turn, const std::string& report_file_name) const {
     std::fstream f(report_file_name, std::ios::app);
     if(f.is_open()) {
         f << upper_line(*this);
