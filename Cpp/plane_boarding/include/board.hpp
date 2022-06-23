@@ -43,7 +43,7 @@ public:
     bool is_boarding_finished() const;
     // reports
     void clear_report(const std::string& report_file_name) ;
-    void generate_tour_report(int turn, const std::string& report_file_name) const ;
+    void generate_tour_report(unsigned int turn, const std::string& report_file_name) const ;
 
 private:
     unsigned int luggage_time() const;

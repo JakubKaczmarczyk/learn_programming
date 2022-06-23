@@ -63,6 +63,41 @@ TEST(RowTest, moveInRowTest) {
     EXPECT_NE(row.buffer()[5], nullptr);
 }
 
+TEST(RowTest, stepInRowDelayTest) {
+    Row row(3,6);
+    std::unique_ptr<Passenger> passenger0 = std::make_unique<Passenger>(3, 0);
+    std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 1);
+    std::unique_ptr<Passenger> passenger2 = std::make_unique<Passenger>(3, 2);
+    row.enter_row(std::move(passenger2));
+    row.sit();
+    ASSERT_EQ(row.seat()[2].is_taken(), true);\
+    row.enter_row(std::move(passenger1));
+    row.step_forward_row();
+    EXPECT_EQ(row.buffer()[1], nullptr);
+    row.step_forward_row();
+    EXPECT_NE(row.buffer()[1], nullptr);
+    row.sit();
+    EXPECT_EQ(row.buffer()[1], nullptr);
+    row.enter_row(std::move(passenger0));
+    EXPECT_EQ(row.buffer()[0], nullptr);
+    EXPECT_EQ(row.buffer()[1], nullptr);
+    row.step_forward_row();
+    EXPECT_EQ(row.buffer()[0], nullptr);
+    EXPECT_EQ(row.buffer()[1], nullptr);
+    row.step_forward_row();
+    EXPECT_EQ(row.buffer()[0], nullptr);
+    EXPECT_NE(row.buffer()[1], nullptr);
+    row.step_forward_row();
+    EXPECT_EQ(row.buffer()[0], nullptr);
+    EXPECT_NE(row.buffer()[1], nullptr);
+    row.step_forward_row();
+    EXPECT_NE(row.buffer()[0], nullptr);
+    EXPECT_EQ(row.buffer()[1], nullptr);
+    row.sit();
+    EXPECT_EQ(row.buffer()[0], nullptr);
+    EXPECT_EQ(row.buffer()[1], nullptr);
+}
+
 TEST(RowTest, sitTest) {
     Row row(3,6);
     std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 2);

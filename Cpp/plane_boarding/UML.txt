@@ -1,0 +1,65 @@
+class Passenger {
++ Passenger(seat_row : int, seat_position : int)
++ {static} reset_id() : void
++ get_id() : int
++ seat_row() : int
++ seat_position() : int
++ loading_luggage_time() : int
++ sit() : void
++ stand_up() : void
++ load_luggage() : void
++ take_luggage() : void
++ is_sitting() : bool
+
+- {static} next_id_ : int
+- id_ : int
+- seat_row : int
+- seat_position : int
+- is_sitting : bool
+- loading_luggage_time_ : int
+- luggage_in_locker : bool
+}
+
+class Seat {
+- row_ : int
+- position_ : int
+- is_taken_ : bool
+- passenger_ : std::unique_ptr<Passenger>
++ Seat(row : int, position : int)
++ is_taken() : bool
++ free_seat() : std::unique_ptr<Passenger> 
++ take_seat(std::unique_ptr<Passenger>)
++ get_position() : int
++ get_row() : int
+}
+
+class Row {
+- seats_nr_ : int
+- row_nr_ : int
+- seats_ : std::vector<Seat>
+- L_buffer_ : std::stack<std::unique_ptr<Passenger>>
+- H_buffer_ : std::stack<std::unique_ptr<Passenger>>
++ Row(seats_in_row : int, row_nr : int)
++ enter_row(std::unique_ptr<Passenger>)
++ std::unique_ptr<Passenger> leave_row()
+
+}
+
+class Board {
+- seats_nr_ : int
+- rows_ : std::vector<Row>
+- aisle_ : std::vector<std::unique_ptr<Passenger>>
+- outer_queue : std:queue<std::unique_ptr<Passenger>>
++ Board(rows : int, seats_in_row : int)
++ enqueue(std::function<std::queue<std::unique_ptr<Passenger>>(int,int)>) : void
++ enqueue_passenger() : void
++ load_luggage() : void
++ enter_row() : void
++ step_forward() : void
++ are_all_seats_taken() : bool
+}
+Seat o-- Passenger
+Row *-- Seat
+Row o-- Passenger
+Board o-- Passenger
+Board *-- Row
