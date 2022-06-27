@@ -2,7 +2,6 @@
 #include "board.hpp"
 #include <iomanip>
 
-
 extern int simulate_board(unsigned int rows_nr, unsigned int seats_in_row, QueueAlgorithm algorithm, LuggageTime luggageTimeType,
                unsigned int manage_luggage_time, unsigned int max_time, unsigned int min_time,
                const std::string &report_file_name, bool generate_report);
