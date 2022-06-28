@@ -14,13 +14,14 @@ enum class QueueAlgorithm {
     FrontToBack,
     Wiki,
     EvenWindows
-
 };
+
 
 enum class LuggageTime {
     Random,
     Fixed
 };
+
 
 class Board {
 public:
@@ -29,10 +30,14 @@ public:
     unsigned int rows_nr() const { return rows_nr_; }
     unsigned int seats_nr() const {return seats_nr_; }
     const std::vector<Row>& rows() const {return rows_; }
-    const std::vector<std::unique_ptr<Passenger>>& aisle() const { return aisle_; }
-    const std::vector<std::unique_ptr<Passenger>>& outer_queue() const {return outer_queue_; }
-    void create_outer_queue(QueueAlgorithm algorithm, LuggageTime luggage_time_type, unsigned int manage_luggage_time,
-                            unsigned int max_time, unsigned int min_time);
+    const std::vector<std::unique_ptr<PassengerOnBoard>>& aisle() const { return aisle_; }
+    const std::vector<std::unique_ptr<PassengerOnBoard>>& outer_queue() const {return outer_queue_; }
+
+    void set_luggage_time_settings(LuggageTime luggage_time_type, unsigned int manage_luggage_time,
+                                   unsigned int max_time, unsigned int min_time);
+    void create_board_plan_anonymous();
+    void create_board_plan_from_database(std::string host, std::string user, std::string password, std::string database);
+    void create_outer_queue(QueueAlgorithm algorithm);
     std::string outer_queue_string() const;
     void enqueue_passenger();
     void step_forward();
@@ -55,8 +60,9 @@ private:
     unsigned int rows_nr_;
     unsigned int seats_nr_;
     std::vector<Row> rows_;
-    std::vector<std::unique_ptr<Passenger>> aisle_;
-    std::vector<std::unique_ptr<Passenger>> outer_queue_;
+    std::vector<std::unique_ptr<PassengerOnBoard>> aisle_;
+    std::vector<std::unique_ptr<PassengerOnBoard>> outer_queue_;
+    std::vector<std::vector<Passenger>> board_plan_;
 
     unsigned int fixed_manage_luggage_time_ = 2U;
     unsigned int random_luggage_max_time_ = 4U;

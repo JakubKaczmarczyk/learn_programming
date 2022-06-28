@@ -15,12 +15,12 @@ Seat::Seat(Seat&& seat) {
     passenger_ = std::move(seat.passenger_);
 }
 
-std::unique_ptr<Passenger> Seat::free_seat() {
+std::unique_ptr<PassengerOnBoard> Seat::free_seat() {
     passenger_->stand_up();
     return std::move(passenger_);
 }
 
-void Seat::take_seat(std::unique_ptr<Passenger> passenger) {
+void Seat::take_seat(std::unique_ptr<PassengerOnBoard> passenger) {
     passenger_ = std::move(passenger);
     passenger_->sit();
 }
@@ -49,10 +49,12 @@ Row::Row(Row &&row) {
 
 void Row::step_forward_row() {
     for(size_t i = 0; i < first_lower_seat_; ++i) {
-        // is step forward sensible?
+        // is step forward sensible? Is there someone to take a step, is there free space to stand nad does
+        // passenger have reason to take a step?
         if(buffer_[i] == nullptr && buffer_[i+1] != nullptr &&
-            buffer_[i+1]->seat_position() <= static_cast<unsigned int>(i)) {
+                buffer_[i + 1]->get_seat_position() <= static_cast<unsigned int>(i)) {
             // delay of crossing taken seat
+            // if passing seat free or was passing time was sufficiently long
             if(!seats_[i+1].is_taken() || (seats_[i+1].is_taken() &&
                 buffer_crossing_counter_[i+1] == crossing_taken_seat_time)) {
                 buffer_[i] = std::move(buffer_[i + 1]);
@@ -64,9 +66,9 @@ void Row::step_forward_row() {
         }
     }
     for(auto i = static_cast<size_t>(seats_in_row_-1); i > first_higher_seat; --i) {
-        // is step forward sensible?
+        // same situation but in other half of row - indexes swapped
         if(buffer_[i] == nullptr && buffer_[i-1] != nullptr &&
-        buffer_[i-1]->seat_position() >= static_cast<unsigned int>(i)) {
+                buffer_[i - 1]->get_seat_position() >= static_cast<unsigned int>(i)) {
             // delay of crossing taken seat
             if(!seats_[i-1].is_taken() || (seats_[i-1].is_taken() &&
                 buffer_crossing_counter_[i-1] == crossing_taken_seat_time)) {
@@ -93,9 +95,9 @@ bool Row::may_passenger_enter_row(unsigned int row_nr, unsigned int seat_nr) con
     }
     return true;
 }
-void Row::enter_row(std::unique_ptr<Passenger> passenger) {
-    if (passenger->seat_row() == row_nr_) {
-        if (passenger->seat_position() < seats_in_row_ / 2) {
+void Row::enter_row(std::unique_ptr<PassengerOnBoard> passenger) {
+    if (passenger->get_seat_row() == row_nr_) {
+        if (passenger->get_seat_position() < seats_in_row_ / 2) {
             if (buffer_[first_lower_seat_] == nullptr) {
                 buffer_[first_lower_seat_] = std::move(passenger);
             }
@@ -112,10 +114,10 @@ void Row::sit() {
         if (buffer_[i] == nullptr) {
             continue;
         }
-        if (buffer_[i]->seat_position() != static_cast<unsigned int>(i)) {
+        if (buffer_[i]->get_seat_position() != static_cast<unsigned int>(i)) {
             continue;
         }
-        std::unique_ptr<Passenger> passenger_ptr = std::move(buffer_[i]);
+        std::unique_ptr<PassengerOnBoard> passenger_ptr = std::move(buffer_[i]);
         passenger_ptr->sit();
 
         seats_[i].take_seat(std::move(passenger_ptr));
