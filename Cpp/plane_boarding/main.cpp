@@ -2,10 +2,9 @@
 #include "board.hpp"
 #include <iomanip>
 
-
 extern int simulate_board(unsigned int rows_nr, unsigned int seats_in_row, QueueAlgorithm algorithm, LuggageTime luggageTimeType,
                unsigned int manage_luggage_time, unsigned int max_time, unsigned int min_time,
-               const std::string &report_file_name, bool generate_report);
+               const std::string &report_file_name, bool generate_report, bool load_db);
 
 extern float simulation_loop(unsigned int iterations, unsigned int rows_nr, unsigned int seats_in_row, QueueAlgorithm algorithm,
                        unsigned int max_time, unsigned int min_time);
@@ -37,7 +36,7 @@ int main() {
                                                       luggageTimeType,
                                                       manage_luggage_time,
                                                       max_time, min_time,
-                                                      "raport_back_to_front.txt", true)
+                                                      "raport_back_to_front.txt", true, false)
                                                       << std::endl;
 
     std::cout << "Front to back : " << simulate_board(rows_nr, seats_in_row,
@@ -45,7 +44,7 @@ int main() {
                                                       luggageTimeType,
                                                       manage_luggage_time,
                                                       max_time, min_time,
-                                                      "raport_front_to_back.txt", true)
+                                                      "raport_front_to_back.txt", true, false)
                                                       << std::endl;
 
     std::cout << "Wiki : " << simulate_board(rows_nr, seats_in_row,
@@ -53,7 +52,7 @@ int main() {
                                              luggageTimeType,
                                              manage_luggage_time,
                                              max_time, min_time,
-                                             "wiki.txt", true)
+                                             "wiki.txt", true, false)
                                              << std::endl;
 
 
@@ -62,36 +61,46 @@ int main() {
                                                      luggageTimeType,
                                                      manage_luggage_time,
                                                      max_time, min_time,
-                                                     "raport_even_windows.txt", true)
+                                                     "raport_even_windows.txt", true, false)
                                                      << std::endl;
 
     if(!do_iterations) {
         return EXIT_SUCCESS;
     }
 
-    std::cout << "Random average Back To Front : " << std::setprecision(2) << std::fixed <<
+    std::cout << "Random time average Back To Front : " << std::setprecision(2) << std::fixed <<
                                simulation_loop(iterations,
                                rows_nr, seats_in_row,
                                QueueAlgorithm::BackToFront,
                                max_time, min_time) << std::endl;
 
-    std::cout << "Random average Front To Back : " << std::setprecision(2) << std::fixed <<
+    std::cout << "Random time average Front To Back : " << std::setprecision(2) << std::fixed <<
               simulation_loop(iterations,
                               rows_nr, seats_in_row,
                               QueueAlgorithm::FrontToBack,
                               max_time, min_time) << std::endl;
 
-    std::cout << "Random average Wiki : " << std::setprecision(2) << std::fixed <<
+    std::cout << "Random time average Wiki : " << std::setprecision(2) << std::fixed <<
               simulation_loop(iterations,
                               rows_nr, seats_in_row,
                               QueueAlgorithm::Wiki,
                               max_time, min_time) << std::endl;
 
-    std::cout << "Random average Even Windows : " << std::setprecision(2) << std::fixed <<
+    std::cout << "Random time average Even Windows : " << std::setprecision(2) << std::fixed <<
               simulation_loop(iterations,
                               rows_nr, seats_in_row,
                               QueueAlgorithm::EvenWindows,
                               max_time, min_time) << std::endl;
 
+
+    // Database
+    std::cout << "Load DataBase Passengers" << std::endl;
+    std::cout << simulate_board(rows_nr, seats_in_row,
+                   QueueAlgorithm::BackToFront,
+                   luggageTimeType,
+                   manage_luggage_time,
+                   max_time, min_time,
+                   "raport_back_to_front.txt", true, true)
+            << std::endl;
     return EXIT_SUCCESS;
 }

@@ -10,13 +10,19 @@
 
 unsigned int simulate_board(unsigned int rows_nr, unsigned int seats_in_row, QueueAlgorithm algorithm, LuggageTime luggageTimeType,
                unsigned int manage_luggage_time, unsigned int max_time, unsigned int min_time,
-               const std::string &report_file_name, bool generate_report) {
+               const std::string &report_file_name, bool generate_report, bool load_db) {
 
     Board board(rows_nr, seats_in_row);
     if(generate_report) {
         board.clear_report(report_file_name);
     }
-    board.create_outer_queue(algorithm, luggageTimeType, manage_luggage_time, max_time, min_time);
+    board.set_luggage_time_settings(luggageTimeType,manage_luggage_time,max_time,min_time);
+    if(load_db) {
+        board.create_board_plan_from_database("localhost","root","SQLadmin","sql_passengers");
+    } else {
+        board.create_board_plan_anonymous();
+    }
+    board.create_outer_queue(algorithm);
     unsigned int turn = 0;
     while(!board.is_boarding_finished()) {
         if(generate_report) {
@@ -45,7 +51,7 @@ float simulation_loop(unsigned int iterations, unsigned int rows_nr, unsigned in
                                          LuggageTime::Random,
                                          0U,
                                          max_time, min_time,
-                                         "", false));
+                                         "", false, false));
 
     }
 

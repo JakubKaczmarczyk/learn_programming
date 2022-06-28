@@ -4,7 +4,7 @@
 
 #include "passenger.hpp"
 
-void Passenger::load_luggage() {
+void PassengerOnBoard::load_luggage() {
     if (has_luggage_) {
         ++luggage_counter_;
         if (luggage_counter_ == loading_luggage_time_) {
@@ -14,7 +14,7 @@ void Passenger::load_luggage() {
     }
 }
 
-void Passenger::take_luggage() {
+void PassengerOnBoard::take_luggage() {
     if (!has_luggage_) {
         ++luggage_counter_;
         if (luggage_counter_ == taking_luggage_time_) {

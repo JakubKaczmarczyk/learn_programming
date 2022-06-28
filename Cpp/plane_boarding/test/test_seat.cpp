@@ -16,7 +16,7 @@ TEST(SeatTest, createSeat) {
 TEST(SeatTest, sittingTest) {
     Seat seat(3, 5);
     EXPECT_EQ(seat.is_taken(), false);
-    std::unique_ptr<Passenger> passenger_ptr = std::make_unique<Passenger>(3,5);
+    std::unique_ptr<PassengerOnBoard> passenger_ptr = std::make_unique<PassengerOnBoard>(3, 5);
     seat.take_seat(std::move(passenger_ptr));
     EXPECT_EQ(seat.is_taken(), true);
     passenger_ptr = seat.free_seat();
@@ -34,8 +34,8 @@ TEST(RowTest, CreateRow) {
 
 TEST(RowTest, EnterRowTest) {
     Row row(3,6);
-    std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 2);
-    std::unique_ptr<Passenger> passenger2 = std::make_unique<Passenger>(3, 5);
+    std::unique_ptr<PassengerOnBoard> passenger1 = std::make_unique<PassengerOnBoard>(3, 2);
+    std::unique_ptr<PassengerOnBoard> passenger2 = std::make_unique<PassengerOnBoard>(3, 5);
     row.enter_row(std::move(passenger1));
     row.enter_row(std::move(passenger2));
     EXPECT_EQ(row.buffer()[0], nullptr);
@@ -49,8 +49,8 @@ TEST(RowTest, EnterRowTest) {
 
 TEST(RowTest, moveInRowTest) {
     Row row(3,6);
-    std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 2);
-    std::unique_ptr<Passenger> passenger2 = std::make_unique<Passenger>(3, 5);
+    std::unique_ptr<PassengerOnBoard> passenger1 = std::make_unique<PassengerOnBoard>(3, 2);
+    std::unique_ptr<PassengerOnBoard> passenger2 = std::make_unique<PassengerOnBoard>(3, 5);
     row.enter_row(std::move(passenger1));
     row.enter_row(std::move(passenger2));
     row.step_forward_row();
@@ -65,9 +65,9 @@ TEST(RowTest, moveInRowTest) {
 
 TEST(RowTest, stepInRowDelayTest) {
     Row row(3,6);
-    std::unique_ptr<Passenger> passenger0 = std::make_unique<Passenger>(3, 0);
-    std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 1);
-    std::unique_ptr<Passenger> passenger2 = std::make_unique<Passenger>(3, 2);
+    std::unique_ptr<PassengerOnBoard> passenger0 = std::make_unique<PassengerOnBoard>(3, 0);
+    std::unique_ptr<PassengerOnBoard> passenger1 = std::make_unique<PassengerOnBoard>(3, 1);
+    std::unique_ptr<PassengerOnBoard> passenger2 = std::make_unique<PassengerOnBoard>(3, 2);
     row.enter_row(std::move(passenger2));
     row.sit();
     ASSERT_EQ(row.seat()[2].is_taken(), true);\
@@ -100,8 +100,8 @@ TEST(RowTest, stepInRowDelayTest) {
 
 TEST(RowTest, sitTest) {
     Row row(3,6);
-    std::unique_ptr<Passenger> passenger1 = std::make_unique<Passenger>(3, 2);
-    std::unique_ptr<Passenger> passenger2 = std::make_unique<Passenger>(3, 5);
+    std::unique_ptr<PassengerOnBoard> passenger1 = std::make_unique<PassengerOnBoard>(3, 2);
+    std::unique_ptr<PassengerOnBoard> passenger2 = std::make_unique<PassengerOnBoard>(3, 5);
     row.enter_row(std::move(passenger1));
     row.enter_row(std::move(passenger2));
     row.sit();

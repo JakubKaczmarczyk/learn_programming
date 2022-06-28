@@ -13,14 +13,16 @@ TEST(BoardTest, createBoard) {
 
 TEST(BoardTest, outerQueueTest) {
     Board board(10U, 6U);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Fixed, 1U, 0, 0);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     EXPECT_EQ(board.outer_queue().size(), 10U * 6U);
 
 }
 
 TEST(BoardTest, enqueueTest) {
     Board board(10U, 6U);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Fixed, 1U, 0, 0);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     EXPECT_EQ(board.outer_queue().size(), 60U);
     EXPECT_NE(board.outer_queue()[59], nullptr);
     EXPECT_EQ(board.aisle()[0], nullptr);
@@ -40,7 +42,8 @@ TEST(BoardTest, enqueueTest) {
 
 TEST(BoardTest, stepForwardTest) {
     Board board(10, 6);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Random, 1U, 0, 0);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     EXPECT_EQ(board.outer_queue().size(), 60);
     EXPECT_NE(board.outer_queue()[59], nullptr);
     EXPECT_EQ(board.aisle()[0], nullptr);
@@ -70,7 +73,8 @@ TEST(BoardTest, stepForwardTest) {
 }
 TEST(BoardTest, stepForwardTestFin) {
     Board board(10, 6);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Random, 1U, 0, 0);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     board.enqueue_passenger();
     for(int i = 0; i < 15; ++i) {
         board.step_forward();
@@ -81,7 +85,8 @@ TEST(BoardTest, stepForwardTestFin) {
 
 TEST(BoardTest, loadLuggageTest) {
     Board board(10, 6);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Fixed, 2U, 0, 0);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 2U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     board.enqueue_passenger();
     for(int i = 0; i < 15; ++i) {
         board.step_forward();
@@ -95,13 +100,14 @@ TEST(BoardTest, loadLuggageTest) {
 
 TEST(BoardTest, EnterRow) {
     Board board(10, 6);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Fixed, 1U, 4U, 1U);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     board.enqueue_passenger();
     board.step_forward();
     board.enqueue_passenger();
     board.enter_rows();
-    ASSERT_EQ(board.aisle()[0]->seat_row(),9);
-    ASSERT_EQ(board.aisle()[1]->seat_row(),9);
+    ASSERT_EQ(board.aisle()[0]->get_seat_row(), 9);
+    ASSERT_EQ(board.aisle()[1]->get_seat_row(), 9);
     for(int i = 0; i < 15; ++i) {
         board.step_forward();
     }
@@ -117,7 +123,8 @@ TEST(BoardTest, EnterRow) {
 
 TEST(BoardTest, fullTest) {
     Board board(2, 4);
-    board.create_outer_queue(QueueAlgorithm::BackToFront, LuggageTime::Fixed, 1U, 4U, 1U);
+    board.set_luggage_time_settings( LuggageTime::Fixed, 1U, 0, 0);
+    board.create_outer_queue(QueueAlgorithm::BackToFront);
     int i = 0;
     while(!board.is_boarding_finished()) {
         board.step_forward();
