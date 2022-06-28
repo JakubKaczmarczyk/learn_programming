@@ -27,13 +27,6 @@ int main() {
         res = mysql_store_result(conn);
         row = mysql_fetch_row(res);
         while(row) {
-            std::stringstream row0(row[0]);
-            unsigned int row0_int;
-            row0 >> row0_int;
-            std::stringstream row7(row[7]);
-            bool row7_b;
-            row7 >> row7_b;
-            std::string row1 = std::string(row[1]);
             std::cout << "Name: " << row[1] << " Surrname: " << row[2] << std::endl;
             row = mysql_fetch_row(res);
         }
