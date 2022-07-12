@@ -16,20 +16,21 @@ public:
     Seat(Seat& seat);
     Seat(Seat&& seat);
 
-    bool is_taken() const { return passenger_ != nullptr;}
-    std::unique_ptr<PassengerOnBoard> free_seat();
-    void take_seat(std::unique_ptr<PassengerOnBoard> passenger);
+    ~Seat() = default;
 
+    // getters seat info
     unsigned int get_position() const { return position_; }
     unsigned int get_row() const { return row_;}
+    bool is_taken() const { return passenger_ != nullptr;}
 
-    ~Seat() = default;
+    // Simulation actions
+    std::unique_ptr<PassengerOnBoard> free_seat();
+    void take_seat(std::unique_ptr<PassengerOnBoard> passenger);
 
 private:
     unsigned int row_;
     unsigned int position_;
     std::unique_ptr<PassengerOnBoard> passenger_ = nullptr;
-
 };
 
 class Row {
@@ -37,18 +38,19 @@ public:
     Row(unsigned int row_nr, unsigned int seats_in_row);
     Row(Row&& row);
 
-    unsigned int row_nr() const { return row_nr_; }
-    unsigned int seats_nr() const { return seats_in_row_; }
+    ~Row() = default;
 
+    // getters row info
+    unsigned int get_row_nr() const { return row_nr_; }
+    unsigned int get_seats_nr() const { return seats_in_row_; }
     const std::vector<Seat>& seat() const {return seats_; }
     const std::vector<std::unique_ptr<PassengerOnBoard>>& buffer() const { return buffer_; }
 
+    // simulation actions
     void step_forward_row();
     bool may_passenger_enter_row(unsigned int row_nr, unsigned int seat_nr) const;
     void enter_row(std::unique_ptr<PassengerOnBoard> passenger);
     void sit();
-
-
 
 private:
     unsigned int row_nr_;

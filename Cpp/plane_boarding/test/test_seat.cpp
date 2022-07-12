@@ -26,8 +26,8 @@ TEST(SeatTest, sittingTest) {
 
 TEST(RowTest, CreateRow) {
     Row row(5, 6);
-    EXPECT_EQ(row.row_nr(), 5);
-    EXPECT_EQ(row.seats_nr(), 6);
+    EXPECT_EQ(row.get_row_nr(), 5);
+    EXPECT_EQ(row.get_seats_nr(), 6);
     EXPECT_EQ(row.seat()[0].get_row(), 5);
     EXPECT_EQ(row.seat()[5].get_position(), 5);
 }

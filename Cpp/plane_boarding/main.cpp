@@ -12,8 +12,8 @@ extern float simulation_loop(unsigned int iterations, unsigned int rows_nr, unsi
 
 int main() {
     // Settings before simulation
-    unsigned int rows_nr = 20U;
-    unsigned int seats_in_row = 8U;
+    unsigned int rows_nr = 10U;
+    unsigned int seats_in_row = 6U;
     LuggageTime luggageTimeType = LuggageTime::Fixed;
     unsigned int manage_luggage_time = 3U;
     unsigned int max_time = 5U;

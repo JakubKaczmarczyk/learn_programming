@@ -1,65 +1,134 @@
+class Passenger {
++ Passenger()
++ Passenger(id : uint, name : string&, surname : string&, age : uint, address :  string&, city : string&, phone_nr :  string&, hand_luggage_registered : bool)
++ ger_id() : uint
++ getName() : string&
++ getSurname() : string&
++ getAge() : uint
++ getAddress() : string&
++ getCity() : string&
++ getPhoneNr() : string&
++ handLuggageRegistered() : bool
+
+- {static} next_id_ : uint
+- id_ : uint
+- name_: string
+- surname_: string
+- age_ : uint
+- address_ : string
+- city_ : string
+- phone_nr_ : string
+- hand_luggage_registered_ : bool
+}
+
 class PassengerOnBoard {
-+ PassengerOnBoard(seat_row : int, seat_position : int)
++ PassengerOnBoard(seat_row : uint, seat_position : uint, loading_luggage_time : uint, taking_luggage_time : uint, passenger_p = Passenger*)
+
++ get_id() : uint
++ get_seat_row() : uint
++ set_seat_row(new_seat_row : uint) : void
++ get_seat_position() : uint
++ set_seat_position(new_seat_position : uint) : void
++ loading_luggage_time() : uint
++ taking_luggage_time() : uint
++ passenger_data() : Passenger&
 + {static} reset_id() : void
-+ get_id() : int
-+ seat_row() : int
-+ seat_position() : int
-+ loading_luggage_time() : int
 + sit() : void
 + stand_up() : void
 + load_luggage() : void
 + take_luggage() : void
 + is_sitting() : bool
++ has_luggage() : bool
 
-- {static} next_id_ : int
-- id_ : int
-- get_seat_row : int
-- get_seat_position : int
+- {static} next_id_ : uint
+- id_ : uint
+- seat_row : uint
+- seat_position : uint
 - is_sitting : bool
-- loading_luggage_time_ : int
-- luggage_in_locker : bool
+- loading_luggage_time_ : uint
+- taking_luggage_time_ : uint
+- has_luggage_ : bool
+- luggage_counter_ : uint
+- passenger_data_pointer_ : Passenger*
 }
 
 class Seat {
-- row_ : int
-- position_ : int
-- is_taken_ : bool
-- passenger_ : std::unique_ptr<PassengerOnBoard>
-+ Seat(row : int, position : int)
+
++ Seat(row : uint, position : uint)
++ Seat(Seat& seat)
++ Seat(Seat&& seat);
++ get_position() : uint
++ get_row() : uint
 + is_taken() : bool
 + free_seat() : std::unique_ptr<PassengerOnBoard>
-+ take_seat(std::unique_ptr<PassengerOnBoard>)
-+ get_position() : int
-+ get_row() : int
++ take_seat(std::unique_ptr<PassengerOnBoard>) : void
+
+- row_ : int
+- position_ : int
+- passenger_ : std::unique_ptr<PassengerOnBoard>
 }
 
 class Row {
-- seats_nr_ : int
-- row_nr_ : int
++ Row(row_nt : uint, seats_in_row : int)
++ Row(Row&& row)
++ get_row_nr() : uint
++ get_seats_nr() : uint
++ seat() : std::vector<Seat>&
++ buffer() : std::vector<std::unique_ptr<PassengerOnBoard>>&
++ step_forward_row() : void;
++ may_passenger_enter_row(row_nr : uint, seat_nr : uint) : bool
++ enter_row(passenger : std::unique_ptr<PassengerOnBoard> passenger)
++ sit() : void;
+- row_nr_ : uint
+- seats_in_row_ : uint
+- first_lower_seat_ : size_t
+- first_higher_seat : size_t
 - seats_ : std::vector<Seat>
-- L_buffer_ : std::stack<std::unique_ptr<PassengerOnBoard>>
-- H_buffer_ : std::stack<std::unique_ptr<PassengerOnBoard>>
-+ Row(seats_in_row : int, row_nr : int)
-+ enter_row(std::unique_ptr<PassengerOnBoard>)
-+ std::unique_ptr<PassengerOnBoard> leave_row()
-
+- buffer_ : std::vector<std::unique_ptr<PassengerOnBoard>>
+- buffer_crossing_counter_ : std::vector<unsigned int>
+- crossing_taken_seat_time : uint
 }
 
 class Board {
-- seats_nr_ : int
++ Board(rows : uint, seats_in_row : uint)
++ get_rows_nr() : uint
++ get_seats_nr() : uint
++ rows() : std::vector<Row>&
++ aisle() : std::vector<std::unique_ptr<PassengerOnBoard>>&
++ outer_queue() :  std::vector<std::unique_ptr<PassengerOnBoard>>&
++ set_luggage_time_settings(luggage_time_type : LuggageTime, manage_luggage_time : uint, max_time : uint, min_time : uint) : void
++ create_board_plan_anonymous() : void
++ create_board_plan_from_database(host : string&, user : string&, password : string&, database : string&) : void
++ create_outer_queue(algorithm : QueueAlgorithm) : void
++ outer_queue_string() : string&
++ enqueue_passenger() : void
++ step_forward() : void
++ load_luggage() : void
++ enter_rows() : void
++ step_forward_row() : void
++ sit() : void
++ is_boarding_finished() : bool
++ clear_report(report_file_name : string&)
++ generate_tour_report(turn : uint, report_file_name : string&)
+- luggage_time() : uint
+- back_to_front_queue() : void
+- front_to_back_queue() : void
+- wiki_queue() : void
+- even_windows_queue() : void
+- rows_nr_ : uint
+- seats_nr_ : uint
 - rows_ : std::vector<Row>
 - aisle_ : std::vector<std::unique_ptr<PassengerOnBoard>>
-- outer_queue : std:queue<std::unique_ptr<PassengerOnBoard>>
-+ Board(rows : int, seats_in_row : int)
-+ enqueue(std::function<std::queue<std::unique_ptr<PassengerOnBoard>>(int,int)>) : void
-+ enqueue_passenger() : void
-+ load_luggage() : void
-+ enter_row() : void
-+ step_forward() : void
-+ are_all_seats_taken() : bool
+- outer_queue_ : std::vector<std::unique_ptr<PassengerOnBoard>>
+- board_plan_ : std::vector<std::vector<Passenger>>
+- fixed_manage_luggage_time_ : uint
+- random_luggage_max_time_ : uint
+- random_luggage_min_time_ : uint
+- random_luggage_time_ : uint
 }
+
+PassengerOnBoard o-- Passenger
 Seat o-- PassengerOnBoard
 Row *-- Seat
-Row o-- PassengerOnBoard
 Board o-- PassengerOnBoard
 Board *-- Row
