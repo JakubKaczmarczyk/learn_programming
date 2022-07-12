@@ -1,7 +1,6 @@
 #include <iostream>
 #include "mysql.h"
 #include <string>
-#include <sstream>
 
 
 int main() {

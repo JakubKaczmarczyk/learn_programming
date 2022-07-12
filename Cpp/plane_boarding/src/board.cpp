@@ -86,9 +86,6 @@ void Board::create_board_plan_from_database(std::string host, std::string user, 
                 row = mysql_fetch_row(res);
             }
         }
-
-
-
     }
 }
 
