@@ -7,8 +7,8 @@
 
 TEST(BoardTest, createBoard) {
     Board board(10U, 6U);
-    EXPECT_EQ(board.rows_nr(), 10U);
-    EXPECT_EQ(board.seats_nr(), 6U);
+    EXPECT_EQ(board.get_rows_nr(), 10U);
+    EXPECT_EQ(board.get_seats_nr(), 6U);
 }
 
 TEST(BoardTest, outerQueueTest) {

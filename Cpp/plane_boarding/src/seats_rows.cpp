@@ -31,7 +31,7 @@ Row::Row(unsigned int row_nr, unsigned int seats_in_row) {
     first_lower_seat_ = static_cast<size_t>(seats_in_row_/2 - 1);
     first_higher_seat = static_cast<size_t>(seats_in_row_/2);
     for(unsigned int i = 0; i <seats_in_row_; ++i) {
-        seats_.emplace_back(row_nr_, i);
+        seats_.emplace_back(i,seats_in_row);
         buffer_.push_back(nullptr);
         buffer_crossing_counter_.push_back(1U);
     }
@@ -50,17 +50,18 @@ Row::Row(Row &&row) {
 void Row::step_forward_row() {
     for(size_t i = 0; i < first_lower_seat_; ++i) {
         // is step forward sensible? Is there someone to take a step, is there free space to stand nad does
-        // passenger have reason to take a step?
+        // passenger have a reason to take a step?
         if(buffer_[i] == nullptr && buffer_[i+1] != nullptr &&
                 buffer_[i + 1]->get_seat_position() <= static_cast<unsigned int>(i)) {
             // delay of crossing taken seat
-            // if passing seat free or was passing time was sufficiently long
+            // if passing free seat or was passing time sufficiently long
             if(!seats_[i+1].is_taken() || (seats_[i+1].is_taken() &&
                 buffer_crossing_counter_[i+1] == crossing_taken_seat_time)) {
                 buffer_[i] = std::move(buffer_[i + 1]);
                 buffer_[i + 1] = nullptr;
                 buffer_crossing_counter_[i+1] = 1U;
             } else {
+                // delay
                 ++buffer_crossing_counter_[i+1];
             }
         }

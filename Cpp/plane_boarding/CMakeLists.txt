@@ -17,6 +17,7 @@ set(SOURCE_FILES
         src/seats_rows.cpp
         src/passenger.cpp
         src/board.cpp
+        src/reports.cpp
         src/simulation.cpp)
 
 add_executable(plane_boarding_debug ${SOURCE_FILES} main.cpp)
